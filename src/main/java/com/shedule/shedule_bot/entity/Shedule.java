@@ -25,10 +25,29 @@ public class Shedule {
     private String teacherRang = null;
     private Integer week = null;
     private String dayName = null;
+    private int dayOfWeek = -1;
 
     //private GroupInfo groupInfo = null;
     private String groupId;
     private String groupName;
     private String facultId;
     private String facultName;
+
+
+    public void calCulateDayOfWeek(){
+        if( this.dayName.equals("Понедельник"))
+            this.dayOfWeek = 1;
+        else if( this.dayName.equals("Вторник"))
+            this.dayOfWeek = 2;
+        else if( this.dayName.equals("Среда"))
+            this.dayOfWeek = 3;
+        else if( this.dayName.equals("Четверг"))
+            this.dayOfWeek = 4;
+        else if( this.dayName.equals("Пятница"))
+            this.dayOfWeek = 5;
+        else if( this.dayName.equals("Суббота"))
+            this.dayOfWeek = 6;
+        else if( this.dayName.equals("Воскресенье"))
+            this.dayOfWeek = 7;
+    }
 }

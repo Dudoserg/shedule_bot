@@ -66,14 +66,15 @@ public class Parse {
 
         AtomicInteger count = new AtomicInteger();
         int allCount = groupList.size();
-        WorkQueue workQueue = new WorkQueue(5);
+        AtomicInteger scheduleCount = new AtomicInteger();
+        WorkQueue workQueue = new WorkQueue(4);
         for (GroupInfo groupInfo : groupList) {
             workQueue.execute(() -> {
                 System.out.println("\ncount " + count.getAndIncrement() + "/" + allCount);
                 System.out.println(groupInfo.getId());
                 final String str = readFromFile("files/html_" + groupInfo.getId() + ".txt");
                 final List<Shedule_parser> groupSheduleParser = getGroupShedule(groupInfo, str);
-
+                scheduleCount.addAndGet(groupSheduleParser.size());
                 for (Shedule_parser sheduleParser : groupSheduleParser) {
                     Shedule shedule = new Shedule();
                     shedule.setTime(sheduleParser.getTime());
@@ -89,10 +90,10 @@ public class Parse {
                     shedule.setGroupName(groupInfo.getName());
                     shedule.setFacultId(groupInfo.getFaculty_id());
                     shedule.setFacultName(groupInfo.getFacult_name());
+                    shedule.calCulateDayOfWeek();
 
                     shedule = sheduleRepo.save(shedule);
                 }
-                System.out.println();
                 workQueue.isExecuting.remove(workQueue.isExecuting.size() - 1);
             });
 
@@ -107,8 +108,7 @@ public class Parse {
         }
         workQueue.stopThreads();
         System.out.println("вышли из цикла");
-
-        System.out.println();
+        System.out.println("scheduleCount = " + scheduleCount);
         System.out.println("FULL TIME = " + String.format("%.2f", (double) (System.currentTimeMillis() - m) / 1000.0));
 
     }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -23,6 +24,8 @@ public class MainController {
     @RequestMapping(value = "/test", method = GET)
     public ResponseEntity<Object> account() throws NotFoundException {
         final List<Shedule> allByGroup_name = sheduleService.findAllByGroupName("8Арх-81");
+
+        allByGroup_name.sort(Comparator.comparing(Shedule::getWeek).thenComparing(Shedule::getDayOfWeek));
 
         ResponseEntity<Object> responseEntity =
                 new ResponseEntity<Object>(allByGroup_name, HttpStatus.OK);
