@@ -28,6 +28,6 @@ public class Group {
 
 
     @OneToMany( mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Shedule> groupSet;
+    private Set<Shedule> sheduleSet;
 
 }

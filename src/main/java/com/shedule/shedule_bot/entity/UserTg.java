@@ -4,10 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -26,6 +23,17 @@ public class UserTg {
     private Integer state = -1;
     // В каком состоянии бот находился до последнего действия
     private Integer prev_state = -1;
+
+
+    // запоминаем выбранный факультет
+    @ManyToOne
+    @JoinColumn(name = "saveFaculty_1", nullable = true)
+    private Faculty saveFaculty_1 = null;
+
+    @ManyToOne
+    @JoinColumn(name = "savedGroup_1", nullable = true)
+    private Group savedGroup_1 = null;
+
 
     public UserTg() {
     }

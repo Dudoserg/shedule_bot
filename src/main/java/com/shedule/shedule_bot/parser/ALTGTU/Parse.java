@@ -93,47 +93,53 @@ public class Parse {
                 final String str = readFromFile("files/html_" + groupInfo.getId() + ".txt");
                 final List<Shedule_parser> groupSheduleParser = getGroupShedule(groupInfo, str);
                 scheduleCount.addAndGet(groupSheduleParser.size());
-                for (Shedule_parser sheduleParser : groupSheduleParser) {
-                    Shedule shedule = new Shedule();
-                    shedule.setTime(sheduleParser.getTime());
-                    shedule.setSubject(sheduleParser.getSubject());
-                    shedule.setSubjectType(sheduleParser.getSubject_type());
-                    shedule.setCabinet(sheduleParser.getCabinet());
-                    shedule.setTeacher(sheduleParser.getTeacher());
-                    shedule.setTeacherRang(sheduleParser.getTeacher_rang());
-                    shedule.setWeek(sheduleParser.getWeek());
-                    shedule.setDayName(sheduleParser.getDayName());
-                    shedule.setStarYear(groupInfo.getStart_year());
 
-                    lockFaculty.lock();
-                    Faculty faculty = facultyRepo.findFacultyByFacultyId(groupInfo.getFaculty_id());
-                    if (faculty == null) {
-                        faculty = new Faculty();
-                        faculty.setFacultyId(groupInfo.getFaculty_id());
-                        faculty.setFacultyName(groupInfo.getFacult_name());
-                        faculty = facultyRepo.save(faculty);
-                    }
-                    lockFaculty.unlock();
-                    // получаем существующую группу
-                    lockGroup.lock();
-                    Group group = groupRepo.findGroupByGroupId(groupInfo.getId());
-                    if (group == null) {
-                        group = new Group();
-                        group.setStartYear(groupInfo.getStart_year());
-                        group.setName(groupInfo.getName());
-                        group.setSpecialityId(groupInfo.getSpeciality_id());
-                        group.setGroupBr(groupInfo.getGroup_br());
-                        group.setGroupId(groupInfo.getId());
-                        group.setFaculty(faculty);
-                        group = groupRepo.save(group);
-                    }
-                    lockGroup.unlock();
+                lockFaculty.lock();
+                Faculty faculty = facultyRepo.findFacultyByFacultyId(groupInfo.getFaculty_id());
+                if (faculty == null) {
+                    faculty = new Faculty();
+                    faculty.setFacultyId(groupInfo.getFaculty_id());
+                    faculty.setFacultyName(groupInfo.getFacult_name());
+                    faculty = facultyRepo.save(faculty);
+                }
+                lockFaculty.unlock();
+                // получаем существующую группу
+                lockGroup.lock();
+                Group group = groupRepo.findGroupByGroupId(groupInfo.getId());
+                if (group == null) {
+                    group = new Group();
+                    group.setStartYear(groupInfo.getStart_year());
+                    group.setName(groupInfo.getName());
+                    group.setSpecialityId(groupInfo.getSpeciality_id());
+                    group.setGroupBr(groupInfo.getGroup_br());
+                    group.setGroupId(groupInfo.getId());
+                    group.setFaculty(faculty);
+                    group = groupRepo.save(group);
+                }
+                lockGroup.unlock();
 
-                    shedule.setGroup(group);
-                    shedule.calCulateDayOfWeek();
-                    lockShedule.lock();
-                    shedule = sheduleRepo.save(shedule);
-                    lockShedule.unlock();
+                if (groupSheduleParser.size() != 0) {
+                    for (Shedule_parser sheduleParser : groupSheduleParser) {
+                        Shedule shedule = new Shedule();
+                        shedule.setTime(sheduleParser.getTime());
+                        shedule.setSubject(sheduleParser.getSubject());
+                        shedule.setSubjectType(sheduleParser.getSubject_type());
+                        shedule.setCabinet(sheduleParser.getCabinet());
+                        shedule.setTeacher(sheduleParser.getTeacher());
+                        shedule.setTeacherRang(sheduleParser.getTeacher_rang());
+                        shedule.setWeek(sheduleParser.getWeek());
+                        shedule.setDayName(sheduleParser.getDayName());
+                        shedule.setStarYear(groupInfo.getStart_year());
+
+
+                        shedule.setGroup(group);
+                        shedule.calCulateDayOfWeek();
+                        lockShedule.lock();
+                        shedule = sheduleRepo.save(shedule);
+                        lockShedule.unlock();
+                    }
+                } else {
+
                 }
                 workQueue.isExecuting.remove(workQueue.isExecuting.size() - 1);
             });
