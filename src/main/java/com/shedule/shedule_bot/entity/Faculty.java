@@ -18,6 +18,6 @@ public class Faculty {
     private String facultyId;
     private String facultyName;
 
-//    @OneToMany( mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private Set<Group> facultySet;
+    @OneToMany( mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Group> facultySet;
 }

@@ -19,14 +19,15 @@ public class Group {
     private String name;
 
     private String specialityId;
+    private String groupId;
     private Integer groupBr;
 
-//    @ManyToOne
-//    @JoinColumn(name = "faculty_id", nullable = false)
-//    private Faculty faculty;
+    @ManyToOne
+    @JoinColumn(name = "faculty_id", nullable = false)
+    private Faculty faculty;
 
 
-//    @OneToMany( mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    private Set<Shedule> groupSet;
+    @OneToMany( mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Shedule> groupSet;
 
 }

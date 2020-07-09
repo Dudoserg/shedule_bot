@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shedule.shedule_bot.entity.Faculty;
+import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.Shedule;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
 import com.shedule.shedule_bot.repo.FacultyRepo;
+import com.shedule.shedule_bot.repo.GroupRepo;
 import com.shedule.shedule_bot.repo.SheduleRepo;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
@@ -38,6 +40,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -51,6 +55,10 @@ public class Parse {
 
     @Autowired
     FacultyRepo facultyRepo;
+
+    @Autowired
+    GroupRepo groupRepo;
+
 
     public Parse() throws JsonProcessingException, InterruptedException {
     }
@@ -70,21 +78,14 @@ public class Parse {
 
         //this.saveGroupSheduleToFile(groupList);
 
-        final List<Faculty> list = facultyRepo.findFacultyByFacultyId("asdasdfasdfasdf");
-        Faculty faculty1 = null;
-        if (list.size() != 0)
-            faculty1 = list.get(0);
-        if (faculty1 == null) {
-            faculty1 = new Faculty();
-            faculty1.setFacultyId("setFacultyId");
-            faculty1.setFacultyName("setFacultyName");
-            faculty1 = facultyRepo.save(faculty1);
-        }
-
         AtomicInteger count = new AtomicInteger();
         int allCount = groupList.size();
         AtomicInteger scheduleCount = new AtomicInteger();
         WorkQueue workQueue = new WorkQueue(4);
+        Lock lockFaculty = new ReentrantLock();
+        Lock lockGroup = new ReentrantLock();
+        Lock lockShedule = new ReentrantLock();
+
         for (GroupInfo groupInfo : groupList) {
             workQueue.execute(() -> {
                 System.out.println("\ncount " + count.getAndIncrement() + "/" + allCount);
@@ -104,30 +105,35 @@ public class Parse {
                     shedule.setDayName(sheduleParser.getDayName());
                     shedule.setStarYear(groupInfo.getStart_year());
 
-                    Faculty faculty = facultyRepo.findFacultyByFacultyId(groupInfo.getFaculty_id()).get(0);
+                    lockFaculty.lock();
+                    Faculty faculty = facultyRepo.findFacultyByFacultyId(groupInfo.getFaculty_id());
                     if (faculty == null) {
                         faculty = new Faculty();
                         faculty.setFacultyId(groupInfo.getFaculty_id());
                         faculty.setFacultyName(groupInfo.getFacult_name());
                         faculty = facultyRepo.save(faculty);
                     }
+                    lockFaculty.unlock();
                     // получаем существующую группу
-//                    Group group = groupRepo.findGroupByGroupId(groupInfo.getId());
-//                    if(group == null){
-//                        group = new Group();
-//                        group.setStartYear(groupInfo.getStart_year());
-//                        group.setName(groupInfo.getName());
-//                        //group.setSpecialityId(groupInfo.getSpeciality_id());
-//                        group.setGroupBr(groupInfo.getGroup_br());
-//                        //group.setGroupId(groupInfo.getId());
-//                       // group.setFaculty(faculty);
-//                        group = groupRepo.save(group);
-//                    }
-                    //shedule.setGroup(group);
+                    lockGroup.lock();
+                    Group group = groupRepo.findGroupByGroupId(groupInfo.getId());
+                    if (group == null) {
+                        group = new Group();
+                        group.setStartYear(groupInfo.getStart_year());
+                        group.setName(groupInfo.getName());
+                        group.setSpecialityId(groupInfo.getSpeciality_id());
+                        group.setGroupBr(groupInfo.getGroup_br());
+                        group.setGroupId(groupInfo.getId());
+                        group.setFaculty(faculty);
+                        group = groupRepo.save(group);
+                    }
+                    lockGroup.unlock();
 
+                    shedule.setGroup(group);
                     shedule.calCulateDayOfWeek();
-
+                    lockShedule.lock();
                     shedule = sheduleRepo.save(shedule);
+                    lockShedule.unlock();
                 }
                 workQueue.isExecuting.remove(workQueue.isExecuting.size() - 1);
             });

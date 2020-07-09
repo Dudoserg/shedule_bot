@@ -25,11 +25,10 @@ public class Shedule {
     private Integer dayOfWeek = -1;
     private Integer starYear = -1;
 
-    //private GroupInfo groupInfo = null;
 
-//    @ManyToOne
-//    @JoinColumn(name = "group_id", nullable = false)
-//    private Group group;
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
 
 
     public void calCulateDayOfWeek(){
