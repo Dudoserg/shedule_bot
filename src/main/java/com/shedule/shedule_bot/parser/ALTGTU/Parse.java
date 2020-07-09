@@ -3,10 +3,12 @@ package com.shedule.shedule_bot.parser.ALTGTU;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shedule.shedule_bot.entity.Faculty;
 import com.shedule.shedule_bot.entity.Shedule;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
+import com.shedule.shedule_bot.repo.FacultyRepo;
 import com.shedule.shedule_bot.repo.SheduleRepo;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
@@ -46,10 +48,14 @@ public class Parse {
     @Autowired
     SheduleRepo sheduleRepo;
 
+
+    @Autowired
+    FacultyRepo facultyRepo;
+
     public Parse() throws JsonProcessingException, InterruptedException {
     }
 
-    public void start()  throws JsonProcessingException, InterruptedException{
+    public void start() throws JsonProcessingException, InterruptedException {
         // Получаем айдишники всех факультетов универа
         long m = System.currentTimeMillis();
         final String mainPageHtml = getMainPage();
@@ -62,7 +68,18 @@ public class Parse {
         final List<GroupInfo> groupList = this.getGroupList(idFacultsList);
         System.out.println(groupList.size());
 
-        this.saveGroupSheduleToFile(groupList);
+        //this.saveGroupSheduleToFile(groupList);
+
+        final List<Faculty> list = facultyRepo.findFacultyByFacultyId("asdasdfasdfasdf");
+        Faculty faculty1 = null;
+        if (list.size() != 0)
+            faculty1 = list.get(0);
+        if (faculty1 == null) {
+            faculty1 = new Faculty();
+            faculty1.setFacultyId("setFacultyId");
+            faculty1.setFacultyName("setFacultyName");
+            faculty1 = facultyRepo.save(faculty1);
+        }
 
         AtomicInteger count = new AtomicInteger();
         int allCount = groupList.size();
@@ -87,10 +104,27 @@ public class Parse {
                     shedule.setDayName(sheduleParser.getDayName());
                     shedule.setStarYear(groupInfo.getStart_year());
 
-                    shedule.setGroupId(groupInfo.getId());
-                    shedule.setGroupName(groupInfo.getName());
-                    shedule.setFacultId(groupInfo.getFaculty_id());
-                    shedule.setFacultName(groupInfo.getFacult_name());
+                    Faculty faculty = facultyRepo.findFacultyByFacultyId(groupInfo.getFaculty_id()).get(0);
+                    if (faculty == null) {
+                        faculty = new Faculty();
+                        faculty.setFacultyId(groupInfo.getFaculty_id());
+                        faculty.setFacultyName(groupInfo.getFacult_name());
+                        faculty = facultyRepo.save(faculty);
+                    }
+                    // получаем существующую группу
+//                    Group group = groupRepo.findGroupByGroupId(groupInfo.getId());
+//                    if(group == null){
+//                        group = new Group();
+//                        group.setStartYear(groupInfo.getStart_year());
+//                        group.setName(groupInfo.getName());
+//                        //group.setSpecialityId(groupInfo.getSpeciality_id());
+//                        group.setGroupBr(groupInfo.getGroup_br());
+//                        //group.setGroupId(groupInfo.getId());
+//                       // group.setFaculty(faculty);
+//                        group = groupRepo.save(group);
+//                    }
+                    //shedule.setGroup(group);
+
                     shedule.calCulateDayOfWeek();
 
                     shedule = sheduleRepo.save(shedule);

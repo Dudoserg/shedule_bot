@@ -13,10 +13,10 @@ public class SheduleService {
     @Autowired
     SheduleRepo sheduleRepo;
 
-    public List<Shedule> findAllByGroupName(String groupName){
-        final List<Shedule> allByGroup_name = sheduleRepo.findAllByGroupName(groupName);
-        return allByGroup_name;
-    }
+//    public List<Shedule> findAllByGroupName(String groupName){
+//        final List<Shedule> allByGroup_name = sheduleRepo.findAllByGroupName(groupName);
+//        return allByGroup_name;
+//    }
 
     public Long getCountRow(){
         return sheduleRepo.getCountRow();

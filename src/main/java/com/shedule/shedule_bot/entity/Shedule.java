@@ -4,10 +4,7 @@ import com.shedule.shedule_bot.parser.GroupInfo;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -29,10 +26,10 @@ public class Shedule {
     private Integer starYear = -1;
 
     //private GroupInfo groupInfo = null;
-    private String groupId;
-    private String groupName;
-    private String facultId;
-    private String facultName;
+
+//    @ManyToOne
+//    @JoinColumn(name = "group_id", nullable = false)
+//    private Group group;
 
 
     public void calCulateDayOfWeek(){

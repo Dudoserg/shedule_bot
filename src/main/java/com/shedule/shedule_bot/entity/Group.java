@@ -4,11 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-
+@Table(name = "Group_table")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,14 +17,16 @@ public class Group {
 
     private Integer startYear;
     private String name;
-    private String facultyId;
+
     private String specialityId;
     private Integer groupBr;
-    private String groupId;
-    private String facultyName;
 
-    @ManyToOne
-    @JoinColumn(name = "faculty_id", nullable = false)
-    private Faculty faculty;
+//    @ManyToOne
+//    @JoinColumn(name = "faculty_id", nullable = false)
+//    private Faculty faculty;
+
+
+//    @OneToMany( mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Set<Shedule> groupSet;
 
 }
