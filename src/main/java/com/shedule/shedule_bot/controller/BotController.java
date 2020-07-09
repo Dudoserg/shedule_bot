@@ -1,11 +1,8 @@
 package com.shedule.shedule_bot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.shedule.shedule_bot.service.TgService.BotService;
-import com.shedule.shedule_bot.service.TgService.Entity.Update.Update;
-import com.shedule.shedule_bot.service.TgService.Methods.SendMessage;
-import com.shedule.shedule_bot.service.TgService.Objects.KeyboardButton;
-import com.shedule.shedule_bot.service.TgService.Objects.ReplyKeyboardMarkup;
+import com.shedule.shedule_bot.service.BotService;
+import com.shedule.shedule_bot.service.TgBot.Entity.Update.Update;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -48,9 +41,11 @@ public class BotController {
             @PathVariable String token,
             @RequestBody Update update
     ) throws Exception {
+
         if (!token.equals(TOKEN))
             return new ResponseEntity<Object>(false, HttpStatus.BAD_REQUEST);
-        botService.sendMessage(TOKEN, update.getMessage().getChat().getId(), "ты послал: " + update.getMessage().getText());
+//        botService.sendMessage(TOKEN, update.getMessage().getChat().getId(), "ты послал: " + update.getMessage().getText());
+        botService.receivedMessageFromUser(token, update);
         return new ResponseEntity<Object>(update, HttpStatus.OK);
     }
 
@@ -58,33 +53,15 @@ public class BotController {
     private ResponseEntity<Object> sendMessage(
             @PathVariable String message
     ) throws Exception {
-        botService.sendMessage(TOKEN, "346755292", message);
-        return new ResponseEntity<Object>("ok", HttpStatus.OK);
+        final boolean result = botService.sendMessage(TOKEN, "346755292", message);
+        return new ResponseEntity<Object>(result, HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "tg/sendKeyboard", method = {GET, POST})
     private ResponseEntity<Object> sendKeyboard(
     ) throws Exception {
-        List<List<KeyboardButton>> keyboard = new ArrayList<>(Arrays.asList(
-                Collections.singletonList(new KeyboardButton("currentDate")),
-                Arrays.asList(new KeyboardButton("tomorrow"), new KeyboardButton("today")),
-                Collections.singletonList(new KeyboardButton("kek"))
-        ));
-
-        ReplyKeyboardMarkup replyKeyboardMarkup
-                = ReplyKeyboardMarkup.builder(keyboard)
-                .resize_keyboard(true)
-                .one_time_keyboard(true)
-                .build();
-
-        final SendMessage sendMessageObject =
-                SendMessage.builder("346755292", "text")
-                        .reply_markup(replyKeyboardMarkup)
-                        .build();
-
-        botService.sendMessage(TOKEN, sendMessageObject);
-
-        return new ResponseEntity<Object>("ok", HttpStatus.OK);
+        final boolean result = botService.sendKeyboard(TOKEN);
+        return new ResponseEntity<Object>(result, HttpStatus.OK);
     }
 }

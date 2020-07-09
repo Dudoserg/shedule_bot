@@ -1,13 +1,13 @@
-package com.shedule.shedule_bot.service.TgService.Methods;
+package com.shedule.shedule_bot.service.TgBot.Methods;
 
-import com.shedule.shedule_bot.service.TgService.Objects.BaseKeyBoard;
+import com.shedule.shedule_bot.service.TgBot.Objects.BaseKeyBoard;
 import lombok.*;
 
 @Getter
 @Setter
 @Builder()
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // If immutability is desired
-public class SendMessage {
+public class SendMessageObject {
     @NonNull
     private String chat_id = null;
     @NonNull
@@ -18,15 +18,15 @@ public class SendMessage {
     private Integer reply_to_message_id = null;
     private BaseKeyBoard reply_markup = null;
 
-    public SendMessage(String chat_id, String text) {
+    public SendMessageObject(String chat_id, String text) {
         this.chat_id = chat_id;
         this.text = text;
     }
 
-    private static SendMessageBuilder builder(){
-        return new SendMessageBuilder();
+    private static SendMessageObjectBuilder builder(){
+        return new SendMessageObjectBuilder();
     }
-    public static SendMessageBuilder builder(String chat_id, String text){
+    public static SendMessageObjectBuilder builder(String chat_id, String text){
         return builder().chat_id(chat_id).text(text);
     }
 }

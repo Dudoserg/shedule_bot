@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service.TgService.Objects;
+package com.shedule.shedule_bot.service.TgBot.Objects;
 
 import lombok.*;
 

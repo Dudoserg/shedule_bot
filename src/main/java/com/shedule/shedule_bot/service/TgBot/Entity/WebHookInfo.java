@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service.TgService.Entity;
+package com.shedule.shedule_bot.service.TgBot.Entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
