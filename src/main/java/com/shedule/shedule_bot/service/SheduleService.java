@@ -17,4 +17,8 @@ public class SheduleService {
         final List<Shedule> allByGroup_name = sheduleRepo.findAllByGroupName(groupName);
         return allByGroup_name;
     }
+
+    public Long getCountRow(){
+        return sheduleRepo.getCountRow();
+    }
 }

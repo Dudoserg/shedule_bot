@@ -23,13 +23,12 @@ public class MainController {
 
     @RequestMapping(value = "/test", method = GET)
     public ResponseEntity<Object> account() throws NotFoundException {
-        final List<Shedule> allByGroup_name = sheduleService.findAllByGroupName("8Арх-81");
 
+
+        final List<Shedule> allByGroup_name = sheduleService.findAllByGroupName("8Арх-81");
         allByGroup_name.sort(Comparator.comparing(Shedule::getWeek).thenComparing(Shedule::getDayOfWeek));
 
-        ResponseEntity<Object> responseEntity =
-                new ResponseEntity<Object>(allByGroup_name, HttpStatus.OK);
-
-        return responseEntity;
+        return new ResponseEntity<>(allByGroup_name, HttpStatus.OK);
     }
+
 }

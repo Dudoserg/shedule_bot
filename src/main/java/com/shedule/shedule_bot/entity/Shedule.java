@@ -25,7 +25,8 @@ public class Shedule {
     private String teacherRang = null;
     private Integer week = null;
     private String dayName = null;
-    private int dayOfWeek = -1;
+    private Integer dayOfWeek = -1;
+    private Integer starYear = -1;
 
     //private GroupInfo groupInfo = null;
     private String groupId;

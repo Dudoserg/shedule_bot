@@ -62,7 +62,7 @@ public class Parse {
         final List<GroupInfo> groupList = this.getGroupList(idFacultsList);
         System.out.println(groupList.size());
 
-        //this.saveGroupSheduleToFile(groupList);
+        this.saveGroupSheduleToFile(groupList);
 
         AtomicInteger count = new AtomicInteger();
         int allCount = groupList.size();
@@ -85,6 +85,7 @@ public class Parse {
                     shedule.setTeacherRang(sheduleParser.getTeacher_rang());
                     shedule.setWeek(sheduleParser.getWeek());
                     shedule.setDayName(sheduleParser.getDayName());
+                    shedule.setStarYear(groupInfo.getStart_year());
 
                     shedule.setGroupId(groupInfo.getId());
                     shedule.setGroupName(groupInfo.getName());
@@ -122,6 +123,7 @@ public class Parse {
      * @return расписание группы
      */
     private List<Shedule_parser> getGroupShedule(GroupInfo groupInfo, String result) {
+
         List<Shedule_parser> sheduleParserList = new ArrayList<>();
 
 //        final String result = this.executeRequest("https://www.altstu.ru/m/s/" + groupInfo.getId() + "/");
@@ -205,6 +207,11 @@ public class Parse {
 
                     // String subject = html.split("<strong>(.*?)<\\/strong>")[0];
                     //System.out.println(week + "\t" + dayName + "\t" + time + "\t" + subject + "\t" + subject_type + "\t" + cabinet + "\t" + teacher + "\t" + teacher_rang);
+                    // коллизии, иногда не указывается кабинет, и в поле кабинет попадает имя препода
+                    if (cabinet.length() > 5 && cabinet.charAt(cabinet.length() - 1) == '.' && cabinet.charAt(cabinet.length() - 4) == '.') {
+                        teacher = cabinet;
+                        cabinet = "";
+                    }
 
                     Shedule_parser sheduleParser = new Shedule_parser();
                     sheduleParser.setGroupInfo(groupInfo);
