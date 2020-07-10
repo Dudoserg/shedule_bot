@@ -30,10 +30,22 @@ public class UserTg {
     @JoinColumn(name = "saveFaculty_1", nullable = true)
     private Faculty saveFaculty_1 = null;
 
+    private Integer saveCourse_1;
+
     @ManyToOne
     @JoinColumn(name = "savedGroup_1", nullable = true)
     private Group savedGroup_1 = null;
 
+    // Если переходим в 5е состояние, подписываемся на выбранную группу
+    private Boolean flagCurrentGroup = true;
+
+    // Если переходим в состояние 8
+    private Boolean flagAnotherGroup = false;
+
+    // Группу которую выведем единожды
+    @ManyToOne
+    @JoinColumn(name = "savedAnotherGroup_1", nullable = true)
+    private Group savedAnotherGroup_1 = null;
 
     public UserTg() {
     }

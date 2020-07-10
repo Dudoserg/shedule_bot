@@ -10,6 +10,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Update {
-	private String update_id;
-	private Message message;
+    private String update_id;
+    private Message message;
+    //	Опционально. New incoming inline query
+    //	private InlineQuery inline_query;
+
+    //	Опционально. The result of an inline query that was chosen by a user and sent to their chat partner.
+    //	private ChosenInlineResult chosen_inline_result;
+
+    //Опционально. New incoming callback query
+    private CallbackQuery callback_query;
 }

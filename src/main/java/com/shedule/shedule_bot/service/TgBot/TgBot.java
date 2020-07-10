@@ -136,7 +136,7 @@ public class TgBot {
 
 
         String json = new ObjectMapper().writeValueAsString(payload);
-
+        System.out.println(json);
         StringRequestEntity requestEntity = new StringRequestEntity(
                 json,
                 "application/json",

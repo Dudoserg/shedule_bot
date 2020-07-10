@@ -1,0 +1,288 @@
+{
+  "text": "Выберите дату:",
+  "reply_markup": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "июля 2020",
+          "url": null,
+          "callback_data": "##июля 2020",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "Пн",
+          "url": null,
+          "callback_data": "##Пн",
+          "switch_inline_query": null
+        },
+        {
+          "text": "Вт",
+          "url": null,
+          "callback_data": "##Вт",
+          "switch_inline_query": null
+        },
+        {
+          "text": "Ср",
+          "url": null,
+          "callback_data": "##Ср",
+          "switch_inline_query": null
+        },
+        {
+          "text": "Чт",
+          "url": null,
+          "callback_data": "##Чт",
+          "switch_inline_query": null
+        },
+        {
+          "text": "Пт",
+          "url": null,
+          "callback_data": "##Пт",
+          "switch_inline_query": null
+        },
+        {
+          "text": "Сб",
+          "url": null,
+          "callback_data": "##Сб",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "-",
+          "url": null,
+          "callback_data": "##-",
+          "switch_inline_query": null
+        },
+        {
+          "text": "-",
+          "url": null,
+          "callback_data": "##-",
+          "switch_inline_query": null
+        },
+        {
+          "text": "-",
+          "url": null,
+          "callback_data": "##-",
+          "switch_inline_query": null
+        },
+        {
+          "text": "1",
+          "url": null,
+          "callback_data": "##1",
+          "switch_inline_query": null
+        },
+        {
+          "text": "2",
+          "url": null,
+          "callback_data": "##2",
+          "switch_inline_query": null
+        },
+        {
+          "text": "3",
+          "url": null,
+          "callback_data": "##3",
+          "switch_inline_query": null
+        },
+        {
+          "text": "4",
+          "url": null,
+          "callback_data": "##4",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "5",
+          "url": null,
+          "callback_data": "##5",
+          "switch_inline_query": null
+        },
+        {
+          "text": "6",
+          "url": null,
+          "callback_data": "##6",
+          "switch_inline_query": null
+        },
+        {
+          "text": "7",
+          "url": null,
+          "callback_data": "##7",
+          "switch_inline_query": null
+        },
+        {
+          "text": "8",
+          "url": null,
+          "callback_data": "##8",
+          "switch_inline_query": null
+        },
+        {
+          "text": "9",
+          "url": null,
+          "callback_data": "##9",
+          "switch_inline_query": null
+        },
+        {
+          "text": "10",
+          "url": null,
+          "callback_data": "##10",
+          "switch_inline_query": null
+        },
+        {
+          "text": "11",
+          "url": null,
+          "callback_data": "##11",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "12",
+          "url": null,
+          "callback_data": "##12",
+          "switch_inline_query": null
+        },
+        {
+          "text": "13",
+          "url": null,
+          "callback_data": "##13",
+          "switch_inline_query": null
+        },
+        {
+          "text": "14",
+          "url": null,
+          "callback_data": "##14",
+          "switch_inline_query": null
+        },
+        {
+          "text": "15",
+          "url": null,
+          "callback_data": "##15",
+          "switch_inline_query": null
+        },
+        {
+          "text": "16",
+          "url": null,
+          "callback_data": "##16",
+          "switch_inline_query": null
+        },
+        {
+          "text": "17",
+          "url": null,
+          "callback_data": "##17",
+          "switch_inline_query": null
+        },
+        {
+          "text": "18",
+          "url": null,
+          "callback_data": "##18",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "19",
+          "url": null,
+          "callback_data": "##19",
+          "switch_inline_query": null
+        },
+        {
+          "text": "20",
+          "url": null,
+          "callback_data": "##20",
+          "switch_inline_query": null
+        },
+        {
+          "text": "21",
+          "url": null,
+          "callback_data": "##21",
+          "switch_inline_query": null
+        },
+        {
+          "text": "22",
+          "url": null,
+          "callback_data": "##22",
+          "switch_inline_query": null
+        },
+        {
+          "text": "23",
+          "url": null,
+          "callback_data": "##23",
+          "switch_inline_query": null
+        },
+        {
+          "text": "24",
+          "url": null,
+          "callback_data": "##24",
+          "switch_inline_query": null
+        },
+        {
+          "text": "25",
+          "url": null,
+          "callback_data": "##25",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "26",
+          "url": null,
+          "callback_data": "##26",
+          "switch_inline_query": null
+        },
+        {
+          "text": "27",
+          "url": null,
+          "callback_data": "##27",
+          "switch_inline_query": null
+        },
+        {
+          "text": "28",
+          "url": null,
+          "callback_data": "##28",
+          "switch_inline_query": null
+        },
+        {
+          "text": "29",
+          "url": null,
+          "callback_data": "##29",
+          "switch_inline_query": null
+        },
+        {
+          "text": "30",
+          "url": null,
+          "callback_data": "##30",
+          "switch_inline_query": null
+        },
+        {
+          "text": "31",
+          "url": null,
+          "callback_data": "##31",
+          "switch_inline_query": null
+        },
+        {
+          "text": "-",
+          "url": null,
+          "callback_data": "##-",
+          "switch_inline_query": null
+        }
+      ],
+      [
+        {
+          "text": "<",
+          "url": null,
+          "callback_data": "##<",
+          "switch_inline_query": null
+        },
+        {
+          "text": ">",
+          "url": null,
+          "callback_data": "##>",
+          "switch_inline_query": null
+        }
+      ]
+    ]
+  },
+  "chat_id": "346755292"
+}
