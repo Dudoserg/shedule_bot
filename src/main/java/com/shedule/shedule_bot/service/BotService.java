@@ -7,7 +7,8 @@ import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.UserTg;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
-import com.shedule.shedule_bot.service.TgBot.Methods.SendMessageObject;
+import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
+import com.shedule.shedule_bot.service.TgBot.Methods.SendMessage_Method;
 import com.shedule.shedule_bot.service.TgBot.Objects.InlineKeyboardMarkup;
 import com.shedule.shedule_bot.service.TgBot.Objects.KeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.ReplyKeyboardMarkup;
@@ -52,6 +53,7 @@ public class BotService {
         // команды обрабатываются в первую очередь
         if (checkCommand(token, update, userTg))
             return true;
+
 
         Integer state = userTg.getState();
         switch (state) {
@@ -243,7 +245,7 @@ public class BotService {
                 if (isValidate) {
                     result = state_9(token, chatId, LocalDate.now());
                     userTg.updateState(9);          // переход в состояние 9
-
+                    userTg.setSaveIdOfMessageWithCalendar_1(result.getResult().getMessage_id());
                 } else {
                     sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, повторите ввод.");
                     result = state_8(token, chatId, userTg);    // заново отправляем вопрос про день
@@ -267,12 +269,23 @@ public class BotService {
                 switch (type) {
                     case COMMAND: {
                         final InlineKeyboardMarkup inlineKeyboardMarkup = tgCalendar.executeCommand(callbackQuery);
-                        result = state_9(token, chatId, inlineKeyboardMarkup);
+
+                        result = state_9(token, chatId, inlineKeyboardMarkup, userTg.getSaveIdOfMessageWithCalendar_1());
                         break;
                     }
                     case CONFIRM: {
                         final LocalDate confirmDate = tgCalendar.getConfirmDate(callbackQuery);
-                        sendMessage(token, chatId, "Вы выбрали : " + tgCalendar.buetifyLocalDate(confirmDate));
+                        //sendMessage(token, chatId, "Вы выбрали : " + tgCalendar.buetifyLocalDate(confirmDate));
+
+                        TgBot tgBot = new TgBot();
+                        EditMessageText_Method editMessageText_method =
+                                EditMessageText_Method.builder(
+                                        chatId,
+                                        callbackQuery.getMessage().getMessage_id(),
+                                        "Вы выбрали : "  + tgCalendar.buetifyLocalDate(confirmDate)
+                                ).build();
+
+                        final SendMessageResult sendMessageResult = tgBot.editMessageText(token, editMessageText_method);
                         break;
                     }
                     case NOTHING: {
@@ -295,15 +308,14 @@ public class BotService {
     }
 
 
-    private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup inlineKeyboardMarkup) throws Exception {
-        // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите дату:")
+    private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup inlineKeyboardMarkup, Integer messageId) throws Exception {
+        EditMessageText_Method editMessageText_method =
+                EditMessageText_Method.builder(chatId, messageId, "Выберите дату:")
                         .reply_markup(inlineKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.editMessageText(token, editMessageText_method);
         return sendMessageResult;
     }
 
@@ -314,13 +326,13 @@ public class BotService {
         TgCalendar tgCalendar = new TgCalendar();
         InlineKeyboardMarkup inlineKeyboardMarkup = tgCalendar.createKeyboard(l);
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите дату:")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите дату:")
                         .reply_markup(inlineKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -340,13 +352,13 @@ public class BotService {
                 .one_time_keyboard(true)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "На какой день вывести расписание?")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "На какой день вывести расписание?")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -382,13 +394,13 @@ public class BotService {
                 .one_time_keyboard(false)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите пункт меню:")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите пункт меню:")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -424,13 +436,13 @@ public class BotService {
                 .one_time_keyboard(true)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите группу")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите группу")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -465,13 +477,13 @@ public class BotService {
                 .one_time_keyboard(false)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите курс")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите курс")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -490,13 +502,13 @@ public class BotService {
                 .one_time_keyboard(false)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите Факультет")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите Факультет")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -513,13 +525,13 @@ public class BotService {
                 .one_time_keyboard(false)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите учебное заведение")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите учебное заведение")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -535,13 +547,13 @@ public class BotService {
                 .one_time_keyboard(false)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, "Выберите субъект РФ в котором расположено учебное заведение")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите субъект РФ в котором расположено учебное заведение")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -624,12 +636,12 @@ public class BotService {
      */
     public SendMessageResult sendMessage(String token, String chat_id, String text) throws Exception {
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chat_id, text)
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chat_id, text)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 
@@ -656,13 +668,13 @@ public class BotService {
                 .one_time_keyboard(true)
                 .build();
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder("346755292", "text")
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder("346755292", "text")
                         .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageObject);
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
         return sendMessageResult;
     }
 

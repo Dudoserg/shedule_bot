@@ -1,12 +1,11 @@
 package com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar;
 
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.CallbackQuery;
-import com.shedule.shedule_bot.service.TgBot.Methods.SendMessageObject;
+import com.shedule.shedule_bot.service.TgBot.Methods.SendMessage_Method;
 import com.shedule.shedule_bot.service.TgBot.Objects.InlineKeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.InlineKeyboardMarkup;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
 import java.util.*;
 
 public class TgCalendar {
@@ -128,8 +127,8 @@ public class TgCalendar {
     public void createCalendar(LocalDate x, String chatId, String messageText) {
         InlineKeyboardMarkup inlineKeyboardMarkup = this.createKeyboard(x);
         // создаем объект сообщение
-        final SendMessageObject sendMessageObject =
-                SendMessageObject.builder(chatId, messageText)
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, messageText)
                         .reply_markup(inlineKeyboardMarkup)
                         .build();
     }

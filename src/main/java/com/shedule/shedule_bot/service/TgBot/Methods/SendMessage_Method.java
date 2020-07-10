@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @Builder()
 @AllArgsConstructor(access = AccessLevel.PRIVATE) // If immutability is desired
-public class SendMessageObject {
+public class SendMessage_Method {
     @NonNull
     private String chat_id = null;
     @NonNull
@@ -18,15 +18,15 @@ public class SendMessageObject {
     private Integer reply_to_message_id = null;
     private BaseKeyBoard reply_markup = null;
 
-    public SendMessageObject(String chat_id, String text) {
+    public SendMessage_Method(String chat_id, String text) {
         this.chat_id = chat_id;
         this.text = text;
     }
 
-    private static SendMessageObjectBuilder builder(){
-        return new SendMessageObjectBuilder();
+    private static SendMessage_MethodBuilder builder(){
+        return new SendMessage_MethodBuilder();
     }
-    public static SendMessageObjectBuilder builder(String chat_id, String text){
+    public static SendMessage_MethodBuilder builder(String chat_id, String text){
         return builder().chat_id(chat_id).text(text);
     }
 }

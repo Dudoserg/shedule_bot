@@ -49,7 +49,7 @@ public class UserTg {
 
 
     // сохраняем айдишник сообщения с календарем
-    private String saveMessageId_1;
+    private Integer saveIdOfMessageWithCalendar_1;
 
     public UserTg() {
     }
