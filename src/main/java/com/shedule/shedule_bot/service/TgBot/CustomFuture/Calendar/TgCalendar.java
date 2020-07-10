@@ -1,5 +1,6 @@
 package com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar;
 
+import com.shedule.shedule_bot.service.TgBot.Entity.Update.CallbackQuery;
 import com.shedule.shedule_bot.service.TgBot.Methods.SendMessageObject;
 import com.shedule.shedule_bot.service.TgBot.Objects.InlineKeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.InlineKeyboardMarkup;
@@ -8,15 +9,46 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.*;
 
-public class Calendar {
+public class TgCalendar {
+
+    public enum TgCalendarCommandType {
+        COMMAND("COMMAND"),
+        NOTHING("NOTHING"),
+        CONFIRM("CONFIRM");
+
+        private String str;
+
+        public String getStr() {
+            return str;
+        }
+
+        TgCalendarCommandType(String str) {
+            this.str = str;
+        }
+
+        public static TgCalendarCommandType getTypeByStr(String s) {
+            for (TgCalendarCommandType value : TgCalendarCommandType.values()) {
+                if (value.getStr().equals(s))
+                    return value;
+            }
+            return null;
+        }
+    }
 
     private String separator = "#";
 
+    private List<String> mounthTitleList = new ArrayList<>(
+            Arrays.asList("Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь")
+    );
 
+    public void changeSeparator(String str) {
+        this.separator = str;
+    }
 
 
     /**
      * Создаем клавиатуру - календарь
+     *
      * @param x дата с месяцем и годом, на которую будет создана клавиатура
      * @return готовая к отправке клавиатура
      */
@@ -24,7 +56,7 @@ public class Calendar {
         List<List<InlineKeyboardButton>> keyboardList = new ArrayList<>();
 
         final LocalDate localDate = LocalDate.of(x.getYear(), x.getMonth(), 1);
-        String mounth_str = localDate.getMonth().getDisplayName(TextStyle.FULL, new Locale("ru"));
+        String mounth_str = this.mounthTitleList.get(localDate.getMonth().getValue() - 1);
         String year_str = String.valueOf(localDate.getYear());
 
         keyboardList.add(
@@ -47,9 +79,10 @@ public class Calendar {
                         InlineKeyboardButton.createWithCallback_data("Вс", createNothingCallback("Вс"))
                 )
         );
+
         // пропуски ( которые являются днями прошлого месяца )
         keyboardList.add(new ArrayList<>());
-        for (int i = 0; i < localDate.getDayOfWeek().getValue(); i++) {
+        for (int i = 0; i < localDate.getDayOfWeek().getValue() - 1; i++) {
             keyboardList.get(keyboardList.size() - 1).add(
                     InlineKeyboardButton.createWithCallback_data("-", createNothingCallback("-"))
             );
@@ -64,12 +97,12 @@ public class Calendar {
             }
             lastRow.add(
                     InlineKeyboardButton.createWithCallback_data(
-                            String.valueOf(currentButtonLocalDate.getDayOfWeek().getValue()),
+                            String.valueOf(currentButtonLocalDate.getDayOfMonth()),
                             createConfirmCallback(currentButtonLocalDate))
             );
             currentButtonLocalDate = currentButtonLocalDate.plusDays(1);
         }
-        // пропуски чтобы добить до конца недели
+        // пропуски чтобы добить до конца последней недели
         while (keyboardList.get(keyboardList.size() - 1).size() != 7) {
             keyboardList.get(
                     keyboardList.size() - 1).add(InlineKeyboardButton.createWithCallback_data("-", createNothingCallback("-"))
@@ -82,14 +115,14 @@ public class Calendar {
                         InlineKeyboardButton.createWithCallback_data(">", createCommandCallback(">" + localDate.toString()))
                 )
         );
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardList);
-        return inlineKeyboardMarkup;
+        return new InlineKeyboardMarkup(keyboardList);
     }
 
     /**
      * Создаем Сообщение с клавиатурой - календарем
-     * @param x дата с месяцем и годом, на которую будет создана клавиатура
-     * @param chatId куда будем отправлять сообщение
+     *
+     * @param x           дата с месяцем и годом, на которую будет создана клавиатура
+     * @param chatId      куда будем отправлять сообщение
      * @param messageText текст сообщения
      */
     public void createCalendar(LocalDate x, String chatId, String messageText) {
@@ -101,7 +134,89 @@ public class Calendar {
                         .build();
     }
 
+    /**
+     * Получить результат в виде строки
+     *
+     * @param callbackQuery CallbackQuery
+     * @return результат в виде строки
+     */
+    public String getResult(CallbackQuery callbackQuery) {
+        return callbackQuery.getData();
+    }
+
+    /**
+     * Получаем тип нажатой кнопки (Команда, Ничего, выбрана дата)
+     *
+     * @param callbackQuery CallbackQuery
+     * @return TgCalendarCommandType
+     */
+    public TgCalendarCommandType getType(CallbackQuery callbackQuery) {
+        final String result = getResult(callbackQuery);
+        final String[] split = result.split("#");
+        final String type_str = split[2].toUpperCase();
+        return TgCalendarCommandType.getTypeByStr(type_str);
+    }
+
+    public InlineKeyboardMarkup executeCommand(CallbackQuery callbackQuery) throws Exception {
+        final TgCalendarCommandType type = getType(callbackQuery);
+        final String command = getResult(callbackQuery);
+
+        if (type != TgCalendarCommandType.COMMAND)
+            throw new Exception(command + " this is not command!");
+
+        final String body = this.getCommandBody(command);
+
+        if (body.charAt(0) == '>') {
+            // на месяц в перед
+            final String dateStr = body.substring(1, body.length());
+            LocalDate localDate = LocalDate.parse(dateStr);
+            localDate = localDate.plusMonths(1);
+            return this.createKeyboard(localDate);
+        } else if (body.charAt(0) == '<') {
+            // на месяц в перед
+            final String dateStr = body.substring(1, body.length());
+            LocalDate localDate = LocalDate.parse(dateStr);
+            localDate = localDate.minusMonths(1);
+            return this.createKeyboard(localDate);
+        } else
+            throw new Exception("unknown command!");
+    }
+
+    public LocalDate getConfirmDate(CallbackQuery callbackQuery) throws Exception {
+        final TgCalendarCommandType type = getType(callbackQuery);
+        final String command = getResult(callbackQuery);
+
+        if (type != TgCalendarCommandType.CONFIRM)
+            throw new Exception(command + " this is not CONFIRM!");
+
+        final String body = this.getConfirmBody(command);
+        LocalDate localDate = LocalDate.parse(body);
+        return localDate;
+    }
+
+    public String buetifyLocalDate(LocalDate localDate) {
+        final String mounth_str = this.getTitleOfMounth(localDate);
+        return localDate.getDayOfMonth() + " " + mounth_str + " " + localDate.getYear() + " " + "года";
+    }
+
     //////////////////////////////////////////////////////////////////////////
+    private String getTitleOfMounth(LocalDate localDate) {
+        return this.mounthTitleList.get(localDate.getMonthValue() - 1);
+    }
+
+    // тело команды
+    private String getCommandBody(String command) {
+        final String[] split = command.split("#");
+        final String body = split[3];
+        return body;
+    }
+
+    // тело подтверждения
+    private String getConfirmBody(String command) {
+        final String[] split = command.split("#");
+        final String body = split[3];
+        return body;
+    }
 
     private String createCallback(String str, String text) {
         return separator + "calendar" + separator + str + separator + text;
@@ -128,7 +243,7 @@ public class Calendar {
      * @return callback_data
      */
     private String createNothingCallback() {
-        return this.createCallback("nothing");
+        return this.createCallback(TgCalendarCommandType.NOTHING.toString());
     }
 
     /**
@@ -139,7 +254,7 @@ public class Calendar {
      * @return callback_data
      */
     private String createCommandCallback(String text) {
-        return this.createCallback("command", text);
+        return this.createCallback(TgCalendarCommandType.COMMAND.toString(), text);
     }
 
     /**
@@ -150,7 +265,7 @@ public class Calendar {
      * @return callback_data
      */
     private String createConfirmCallback(LocalDate date) {
-        return this.createCallback("confirm", date.toString());
+        return this.createCallback(TgCalendarCommandType.CONFIRM.toString(), date.toString());
     }
 
 }

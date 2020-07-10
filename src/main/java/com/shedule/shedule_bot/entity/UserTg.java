@@ -47,6 +47,10 @@ public class UserTg {
     @JoinColumn(name = "savedAnotherGroup_1", nullable = true)
     private Group savedAnotherGroup_1 = null;
 
+
+    // сохраняем айдишник сообщения с календарем
+    private String saveMessageId_1;
+
     public UserTg() {
     }
 

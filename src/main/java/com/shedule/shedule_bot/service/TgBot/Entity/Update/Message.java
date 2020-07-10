@@ -18,7 +18,8 @@ public class Message {
 //	private From from;
 
 	//	Дата отправки сообщения (Unix time)
-	private String date;
+	private Integer date;
+	private Integer edit_date;
 
 	//	Диалог, в котором было отправлено сообщение
 	private Chat chat;

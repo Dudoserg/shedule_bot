@@ -4,6 +4,7 @@ package com.shedule.shedule_bot.service.TgBot;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shedule.shedule_bot.service.TgBot.Methods.SendMessageObject;
+import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.HttpStatus;
@@ -95,7 +96,7 @@ public class TgBot {
      * @return стату отправки
      * @throws Exception Exception
      */
-    public boolean sendMessage(String token, SendMessageObject sendMessageObject)
+    public SendMessageResult sendMessage(String token, SendMessageObject sendMessageObject)
             throws Exception {
         // create request url
         URIBuilder builder = new URIBuilder()
@@ -164,8 +165,9 @@ public class TgBot {
         }
         System.out.println(response);
         //TgResult tgResult = mapper.readValue(response, TgResult.class);
-
-        return true;
+        ObjectMapper objectMapper = new ObjectMapper();
+        SendMessageResult sendMessageResult = objectMapper.readValue(response, SendMessageResult.class);
+        return sendMessageResult;
     }
 
 

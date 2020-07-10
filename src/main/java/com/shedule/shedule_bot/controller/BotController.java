@@ -3,6 +3,7 @@ package com.shedule.shedule_bot.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shedule.shedule_bot.service.BotService;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.Update;
+import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,15 +54,15 @@ public class BotController {
     private ResponseEntity<Object> sendMessage(
             @PathVariable String message
     ) throws Exception {
-        final boolean result = botService.sendMessage(TOKEN, "346755292", message);
-        return new ResponseEntity<Object>(result, HttpStatus.OK);
+        final SendMessageResult result = botService.sendMessage(TOKEN, "346755292", message);
+        return new ResponseEntity<Object>("ok", HttpStatus.OK);
     }
 
 
     @RequestMapping(value = "tg/sendKeyboard", method = {GET, POST})
     private ResponseEntity<Object> sendKeyboard(
     ) throws Exception {
-        final boolean result = botService.sendKeyboard(TOKEN);
-        return new ResponseEntity<Object>(result, HttpStatus.OK);
+        final SendMessageResult result = botService.sendKeyboard(TOKEN);
+        return new ResponseEntity<Object>("ok", HttpStatus.OK);
     }
 }
