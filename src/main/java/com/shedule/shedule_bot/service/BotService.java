@@ -259,6 +259,7 @@ public class BotService {
                 final CallbackQuery callbackQuery = update.getCallback_query();
                 final From from = callbackQuery.getFrom();
                 final String chatId = from.getId();
+                
                 break;
             }
             default: {
@@ -283,26 +284,26 @@ public class BotService {
                 Collections.singletonList(
                         InlineKeyboardButton.createWithCallback_data(
                                 mounth_str + " " + year_str,
-                                "##" + mounth_str + " " + year_str
+                                "#calendar#nothing#" + mounth_str + " " + year_str
                         )
                 )
         );
 
         keyboardList.add(
                 Arrays.asList(
-                        InlineKeyboardButton.createWithCallback_data("Пн", "##Пн"),
-                        InlineKeyboardButton.createWithCallback_data("Вт", "##Вт"),
-                        InlineKeyboardButton.createWithCallback_data("Ср", "##Ср"),
-                        InlineKeyboardButton.createWithCallback_data("Чт", "##Чт"),
-                        InlineKeyboardButton.createWithCallback_data("Пт", "##Пт"),
-                        InlineKeyboardButton.createWithCallback_data("Сб", "##Сб"),
-                        InlineKeyboardButton.createWithCallback_data("Вс", "##Вс")
+                        InlineKeyboardButton.createWithCallback_data("Пн", "#calendar#nothing#Пн"),
+                        InlineKeyboardButton.createWithCallback_data("Вт", "#calendar#nothing#Вт"),
+                        InlineKeyboardButton.createWithCallback_data("Ср", "#calendar#nothing#Ср"),
+                        InlineKeyboardButton.createWithCallback_data("Чт", "#calendar#nothing#Чт"),
+                        InlineKeyboardButton.createWithCallback_data("Пт", "#calendar#nothing#Пт"),
+                        InlineKeyboardButton.createWithCallback_data("Сб", "#calendar#nothing#Сб"),
+                        InlineKeyboardButton.createWithCallback_data("Вс", "#calendar#nothing#Вс")
                 )
         );
         // пропуски ( которые являются днями прошлого месяца )
         keyboardList.add(new ArrayList<>());
         for (int i = 0; i < localDate.getDayOfWeek().getValue(); i++) {
-            keyboardList.get(keyboardList.size() - 1).add(InlineKeyboardButton.createWithCallback_data("-", "##-"));
+            keyboardList.get(keyboardList.size() - 1).add(InlineKeyboardButton.createWithCallback_data("-", "#calendar#command#-"));
         }
         LocalDate copyDate = localDate;
         for (int i = 0; i < localDate.lengthOfMonth(); i++) {
@@ -311,17 +312,17 @@ public class BotService {
                 keyboardList.add(new ArrayList<>());
                 lastRow = keyboardList.get(keyboardList.size() - 1);
             }
-            lastRow.add(InlineKeyboardButton.createWithCallback_data(String.valueOf(i + 1), "##" + String.valueOf(i + 1)));
+            lastRow.add(InlineKeyboardButton.createWithCallback_data(String.valueOf(i + 1), "#calendar#confirm#" + String.valueOf(i + 1)));
         }
         // пропуски чтобы добить до конца недели
         while (keyboardList.get(keyboardList.size() - 1).size() != 7) {
-            keyboardList.get(keyboardList.size() - 1).add(InlineKeyboardButton.createWithCallback_data("-", "##-"));
+            keyboardList.get(keyboardList.size() - 1).add(InlineKeyboardButton.createWithCallback_data("-", "#calendar#nothing#"));
         }
         // пагинация месяцев
         keyboardList.add(
                 Arrays.asList(
-                        InlineKeyboardButton.createWithCallback_data("<", "##<" + localDate.toString()),
-                        InlineKeyboardButton.createWithCallback_data(">", "##>" + localDate.toString())
+                        InlineKeyboardButton.createWithCallback_data("<", "#calendar#command#<" + localDate.toString()),
+                        InlineKeyboardButton.createWithCallback_data(">", "#calendar#command#>" + localDate.toString())
                 )
         );
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(keyboardList);
@@ -575,9 +576,10 @@ public class BotService {
     private boolean checkCommand(String token, Update update, UserTg userTg) throws Exception {
         boolean isBot_command = false;
         final Message message = update.getMessage();
+        // проверяем, является ли данное сообщение bot_command
         if(message != null){
             final List<MessageEntity> entities = message.getEntities();
-            if(entities != null || entities.size() != 0){
+            if(entities != null && entities.size() != 0){
                 for (MessageEntity entity : entities) {
                     if (entity.getType().equals("bot_command"))
                         isBot_command = true;
