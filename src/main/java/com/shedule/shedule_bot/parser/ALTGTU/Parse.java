@@ -229,6 +229,17 @@ public class Parse {
                         subject_type = subject_type.substring(0, subject_type.length() - 2);
                     html = html.substring(html.indexOf(subject_type), html.length());
 
+                    if (html.contains("подгруппа")) {
+                        int i = html.indexOf("</nobr>");
+                        i += "</nobr>".length();
+                        String firstPart = html.substring(0, i + 1);
+                        String secondPart = html.substring(i + 1, html.length());
+                        int nobr = firstPart.indexOf("<nobr>");
+                        firstPart = firstPart.substring(0, nobr) + firstPart.substring(nobr + "<nobr>".length(), firstPart.length());
+                        nobr = firstPart.indexOf("</nobr>");
+                        firstPart = firstPart.substring(0, nobr) + firstPart.substring(nobr + "<nobr>".length(), firstPart.length());
+                        html = firstPart + secondPart;
+                    }
 
                     String cabinet = "";
                     Matcher matcher_cabinet = Pattern.compile("<nobr>(.*?)<\\/nobr>").matcher(html);
@@ -266,6 +277,9 @@ public class Parse {
                     sheduleParser.setDayName(dayName);
                     sheduleParser.setTime(time);
                     sheduleParser.setSubject(subject);
+                    subject_type = subject_type.trim();
+                    if (subject_type.length() > 1 && !subject_type.contains(")"))
+                        subject_type += ")";
                     sheduleParser.setSubject_type(subject_type);
                     sheduleParser.setCabinet(cabinet);
                     sheduleParser.setTeacher(teacher);
