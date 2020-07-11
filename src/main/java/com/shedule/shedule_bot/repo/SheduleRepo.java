@@ -1,5 +1,6 @@
 package com.shedule.shedule_bot.repo;
 
+import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.Shedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,9 @@ public interface SheduleRepo extends JpaRepository<Shedule, Long > {
 
     // получить уникальные названия групп
 //    List<Shedule> findDistinctByGroupName(String groupName);
+
+    // group dayOfWeek weekNumber
+    List<Shedule> findAllByGroupEqualsAndDayOfWeekEqualsAndWeekEquals(Group group, Integer dayOfWeek, Integer weekNumber);
+
+    List<Shedule> findAllByGroupEqualsAndWeekEquals(Group group, Integer week);
 }

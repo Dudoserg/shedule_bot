@@ -4,6 +4,7 @@ package com.shedule.shedule_bot.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shedule.shedule_bot.entity.Faculty;
 import com.shedule.shedule_bot.entity.Group;
+import com.shedule.shedule_bot.entity.SheduleDay;
 import com.shedule.shedule_bot.entity.UserTg;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
@@ -282,10 +283,31 @@ public class BotService {
                                 EditMessageText_Method.builder(
                                         chatId,
                                         callbackQuery.getMessage().getMessage_id(),
-                                        "Вы выбрали : "  + tgCalendar.buetifyLocalDate(confirmDate)
+                                        "Вы выбрали : " + tgCalendar.buetifyLocalDate(confirmDate)
                                 ).build();
-
                         final SendMessageResult sendMessageResult = tgBot.editMessageText(token, editMessageText_method);
+                        // Выводим расписание по подписке?
+                        Group groupGorShow = null;
+                        if (userTg.getFlagCurrentGroup() == true && userTg.getFlagAnotherGroup() == false) {
+                            groupGorShow = userTg.getSavedGroup_1();
+                        } else if (userTg.getFlagCurrentGroup() == false && userTg.getFlagAnotherGroup() == true) {
+                            groupGorShow = userTg.getSavedAnotherGroup_1();
+                        }
+                        final SheduleDay sheduleByDate = sheduleService.getSheduleByDate(groupGorShow, confirmDate);
+
+                        final String shedule_str = sheduleByDate.getString();
+
+                        // создаем объект сообщение
+                        final SendMessage_Method sendMessageMethod =
+                                SendMessage_Method.builder(chatId, shedule_str)
+                                        .parse_mode("HTML")
+                                        .build();
+                        SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
+                        // переводим опять на главнео меню
+                        userTg.updateState(5);
+                        result = state_5(token, chatId, userTg);
+
+
                         break;
                     }
                     case NOTHING: {
@@ -308,7 +330,8 @@ public class BotService {
     }
 
 
-    private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup inlineKeyboardMarkup, Integer messageId) throws Exception {
+    private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup
+            inlineKeyboardMarkup, Integer messageId) throws Exception {
         EditMessageText_Method editMessageText_method =
                 EditMessageText_Method.builder(chatId, messageId, "Выберите дату:")
                         .reply_markup(inlineKeyboardMarkup)
@@ -405,7 +428,8 @@ public class BotService {
     }
 
     // state 4 Выберите группу
-    private SendMessageResult state_4(String token, String chatId, Faculty faculty, Integer course) throws Exception {
+    private SendMessageResult state_4(String token, String chatId, Faculty faculty, Integer course) throws
+            Exception {
         //Получаем список групп с заданным факультетом и курсом
         List<Group> groupList = getGroupsByFacultAndCourse(faculty, course);
         // Создаем кнопки клавы
@@ -618,7 +642,8 @@ public class BotService {
      * @throws JsonProcessingException      JsonProcessingException
      * @throws UnsupportedEncodingException UnsupportedEncodingException
      */
-    public boolean setWebhook(String token, String MY_HOST) throws JsonProcessingException, UnsupportedEncodingException {
+    public boolean setWebhook(String token, String MY_HOST) throws
+            JsonProcessingException, UnsupportedEncodingException {
         TgBot tgBot = new TgBot();
         tgBot.setWebhook(token, MY_HOST);
         return true;
