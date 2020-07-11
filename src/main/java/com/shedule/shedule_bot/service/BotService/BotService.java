@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.BotService;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,6 +6,9 @@ import com.shedule.shedule_bot.entity.Faculty;
 import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.SheduleDay;
 import com.shedule.shedule_bot.entity.UserTg;
+import com.shedule.shedule_bot.service.FacultyService;
+import com.shedule.shedule_bot.service.GroupService;
+import com.shedule.shedule_bot.service.SheduleService;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
 import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
@@ -15,6 +18,7 @@ import com.shedule.shedule_bot.service.TgBot.Objects.KeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.ReplyKeyboardMarkup;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import com.shedule.shedule_bot.service.TgBot.TgBot;
+import com.shedule.shedule_bot.service.UserTgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -217,13 +221,13 @@ public class BotService {
                         userTg.updateState(8);
                         break;
                     }
-                    case "Расписание другой группы": {
-                        result = state_0(token, chatId);
-                        userTg.setFlagAnotherGroup(true);
-                        userTg.setFlagCurrentGroup(false);
-                        userTg.updateState(0);
-                        break;
-                    }
+//                    case "Расписание другой группы": {
+//                        result = state_0(token, chatId);
+//                        userTg.setFlagAnotherGroup(true);
+//                        userTg.setFlagCurrentGroup(false);
+//                        userTg.updateState(0);
+//                        break;
+//                    }
                     case "Настройки": {
                         break;
                     }
@@ -242,11 +246,48 @@ public class BotService {
                 final String chatId = chat.getId();
 
                 // валидация ответа
-                boolean isValidate = true;
+                State_8 state_8_object = new State_8();
+                boolean isValidate = state_8_object.verifyPossibleButtons(message.getText());
                 if (isValidate) {
-                    result = state_9(token, chatId, LocalDate.now());
-                    userTg.updateState(9);          // переход в состояние 9
-                    userTg.setSaveIdOfMessageWithCalendar_1(result.getResult().getMessage_id());
+                    TgBot tgBot = new TgBot();
+
+                    Group groupSheduleShow = null;
+                    if (userTg.getFlagCurrentGroup() && !userTg.getFlagAnotherGroup()) {
+                        groupSheduleShow = userTg.getSavedGroup_1();
+                    } else if (!userTg.getFlagCurrentGroup() && userTg.getFlagAnotherGroup()) {
+                        groupSheduleShow = userTg.getSavedAnotherGroup_1();
+                    }
+                    boolean isExecuted = false;
+
+                    switch (message.getText()) {
+                        case "На сегодня": {
+                            final SheduleDay  sheduleByDate = sheduleService.getSheduleToday(groupSheduleShow);
+                            sendShedule(token, userTg, chatId, sheduleByDate);
+                            break;
+                        }
+                        case "На завтра": {
+                            final SheduleDay sheduleByDate = sheduleService.getSheduleTomorrow(groupSheduleShow);
+                            sendShedule(token, userTg, chatId, sheduleByDate);
+                            break;
+                        }
+                        case "Первая неделя": {
+                            final List<SheduleDay> sheduleByDate = sheduleService.getSheduleFirstWeek(groupSheduleShow);
+                            sendShedule(token, userTg, chatId, sheduleByDate);
+                            break;
+                        }
+                        case "Вторая неделя": {
+                            final List<SheduleDay> sheduleByDate = sheduleService.getSheduleSecondWeek(groupSheduleShow);
+                            sendShedule(token, userTg, chatId, sheduleByDate);
+                            break;
+                        }
+                        case "Расписание на конкретную дату": {
+                            result = state_9(token, chatId, LocalDate.now());
+                            userTg.updateState(9);          // переход в состояние 9
+                            userTg.setSaveIdOfMessageWithCalendar_1(result.getResult().getMessage_id());
+                            break;
+                        }
+                    }
+
                 } else {
                     sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, повторите ввод.");
                     result = state_8(token, chatId, userTg);    // заново отправляем вопрос про день
@@ -270,7 +311,6 @@ public class BotService {
                 switch (type) {
                     case COMMAND: {
                         final InlineKeyboardMarkup inlineKeyboardMarkup = tgCalendar.executeCommand(callbackQuery);
-
                         result = state_9(token, chatId, inlineKeyboardMarkup, userTg.getSaveIdOfMessageWithCalendar_1());
                         break;
                     }
@@ -286,7 +326,7 @@ public class BotService {
                                         "Вы выбрали : " + tgCalendar.buetifyLocalDate(confirmDate)
                                 ).build();
                         final SendMessageResult sendMessageResult = tgBot.editMessageText(token, editMessageText_method);
-                        // Выводим расписание по подписке?
+                        // Выводим расписание по подписке
                         Group groupGorShow = null;
                         if (userTg.getFlagCurrentGroup() == true && userTg.getFlagAnotherGroup() == false) {
                             groupGorShow = userTg.getSavedGroup_1();
@@ -295,7 +335,7 @@ public class BotService {
                         }
                         final SheduleDay sheduleByDate = sheduleService.getSheduleByDate(groupGorShow, confirmDate);
 
-                        final String shedule_str = sheduleByDate.getString();
+                        final String shedule_str = sheduleByDate.getSheduleDayString();
 
                         // создаем объект сообщение
                         final SendMessage_Method sendMessageMethod =
@@ -328,6 +368,8 @@ public class BotService {
         userTg = userTgService.save(userTg);
         return true;
     }
+
+
 
 
     private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup
@@ -404,7 +446,7 @@ public class BotService {
 
     List<List<KeyboardButton>> keyboard_state_5 = new ArrayList<>(Arrays.asList(
             Collections.singletonList(new KeyboardButton("Расписание моей группы")),
-            Collections.singletonList(new KeyboardButton("Расписание другой группы")),
+//            Collections.singletonList(new KeyboardButton("Расписание другой группы")),
             Collections.singletonList(new KeyboardButton("Настройки"))
     ));
 
@@ -748,5 +790,50 @@ public class BotService {
                             ", данный бот поможет вам быстро и удобно узнать расписание занятий в вашем учебном заведении!");
         }
         return userTg;
+    }
+
+    /**
+     * Отправляем расписание пользователю
+     * @param token токен
+     * @param userTg пользователь, которому отправляем сообщение
+     * @param chatId чат
+     * @param sheduleByDate расписание
+     * @throws Exception ошибка отправки
+     */
+    private SendMessageResult sendShedule(String token, UserTg userTg, String chatId, SheduleDay sheduleByDate) throws Exception {
+        TgBot tgBot = new TgBot();
+        SendMessageResult result;// создаем объект сообщение
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, sheduleByDate.getSheduleDayString())
+                        .parse_mode("HTML")
+                        .build();
+        SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
+        // переводим опять на главнео меню
+        userTg.updateState(5);
+        result = state_5(token, chatId, userTg);
+        return result;
+    }
+
+    /**
+     * Отправляем расписание пользователю
+     * @param token токен
+     * @param userTg пользователь, которому отправляем сообщение
+     * @param chatId айдишник чата
+     * @param sheduleList расписание на несколько дней
+     * @return SendMessageResult
+     * @throws Exception Exception
+     */
+    private SendMessageResult sendShedule(String token, UserTg userTg, String chatId, List<SheduleDay> sheduleList) throws Exception {
+        TgBot tgBot = new TgBot();
+        SendMessageResult result;// создаем объект сообщение
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, SheduleDay.getSheduleWeekString(sheduleList))
+                        .parse_mode("HTML")
+                        .build();
+        SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
+        // переводим опять на главнео меню
+        userTg.updateState(5);
+        result = state_5(token, chatId, userTg);
+        return result;
     }
 }

@@ -1,7 +1,7 @@
 package com.shedule.shedule_bot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.shedule.shedule_bot.service.BotService;
+import com.shedule.shedule_bot.service.BotService.BotService;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.Update;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import javassist.NotFoundException;
@@ -41,12 +41,16 @@ public class BotController {
     private ResponseEntity<Object> tg(
             @PathVariable String token,
             @RequestBody Update update
-    ) throws Exception {
+    )   {
 
         if (!token.equals(TOKEN))
             return new ResponseEntity<Object>(false, HttpStatus.BAD_REQUEST);
 //        botService.sendMessage(TOKEN, update.getMessage().getChat().getId(), "ты послал: " + update.getMessage().getText());
-        botService.receivedMessageFromUser(token, update);
+        try {
+            botService.receivedMessageFromUser(token, update);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new ResponseEntity<Object>(update, HttpStatus.OK);
     }
 

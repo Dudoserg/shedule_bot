@@ -23,18 +23,12 @@ public class SheduleDay {
         this.week = week;
     }
 
-    public String getString() {
+    private String getString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.bold("Неделя №" + week));
-        stringBuilder.append("\n");
-        if (sheduleList.size() == 0) {
-            stringBuilder.append("\nНа данный день расписания нет\n");
-            return stringBuilder.toString();
-        }
-        stringBuilder.append(this.pre(sheduleList.get(0).getDayName()));
+        stringBuilder.append(pre(sheduleList.get(0).getDayName()));
         stringBuilder.append("\n");
         for (Shedule shedule : sheduleList) {
-            stringBuilder.append(this.underline(shedule.getTime())).append("  ");
+            stringBuilder.append(underline(shedule.getTime())).append("  ");
             String subject = shedule.getSubject();
             final String subjectFirstUpper = Arrays.asList(
                     subject.trim().split(" ")
@@ -49,7 +43,7 @@ public class SheduleDay {
             stringBuilder.append(subjectFirstUpper).append(" ");
             stringBuilder.append(shedule.getSubjectType()).append(" ");
             stringBuilder.append(shedule.getCabinet()).append(" - ");
-            stringBuilder.append(this.italic(shedule.getTeacher())).append(" - ");
+            stringBuilder.append(italic(shedule.getTeacher())).append(" - ");
             stringBuilder.append(shedule.getTeacherRang());
             stringBuilder.append("\n");
         }
@@ -57,19 +51,48 @@ public class SheduleDay {
         return stringBuilder.toString();
     }
 
-    private String italic(String str) {
+    public String getSheduleDayString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(bold("Неделя №" + week));
+        stringBuilder.append("\n");
+        if (sheduleList.size() == 0) {
+            if (this.getDayOfWeek() != 7)
+                stringBuilder.append("\nНа данный день расписания нет\n");
+            else
+                stringBuilder.append("\nВоскресенье, можете отдохнуть =)\n");
+            return stringBuilder.toString();
+        }
+       return stringBuilder.append(this.getString()).toString();
+    }
+
+
+    public static String getSheduleWeekString(List<SheduleDay> list){
+        if (list.size() == 0)
+            return "На эту неделю нет расписания";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(bold("Неделя №" + list.get(0).getWeek()));
+        stringBuilder.append("\n");
+        for (SheduleDay sheduleDay : list) {
+            if(sheduleDay.getSheduleList().size() == 0)
+                continue;
+            stringBuilder.append(sheduleDay.getString());
+        }
+        return stringBuilder.toString();
+    }
+
+    private static String italic(String str) {
         return "<i>" + str + "</i>";
     }
 
-    private String underline(String str) {
+    private static String underline(String str) {
         return "<u>" + str + "</u>";
     }
 
-    private String pre(String str) {
+    private static String pre(String str) {
         return "<pre>" + str + "</pre>";
     }
 
-    private String bold(String str) {
+    private static String bold(String str) {
         return "<b>" + str + "</b>";
     }
 }

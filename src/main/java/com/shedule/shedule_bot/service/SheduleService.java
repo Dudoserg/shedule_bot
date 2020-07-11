@@ -58,14 +58,14 @@ public class SheduleService {
      * @return список дней
      * @throws Exception неправильный номер недели
      */
-    public List<SheduleDay> getSheduleByWeek(Group group, Integer weekNum) throws Exception {
+    private List<SheduleDay> getSheduleByWeek(Group group, Integer weekNum) throws Exception {
         if (weekNum <= 0 || weekNum > 2) {
             throw new Exception("wrong weeNum (" + weekNum + ")");
         }
         final List<Shedule> list = sheduleRepo.findAllByGroupEqualsAndWeekEquals(group, weekNum);
         List<SheduleDay> sheduleDayList = new ArrayList<>();
         for (int i = 0; i < 7; i++)
-            sheduleDayList.set(i, new SheduleDay("", i + 1, weekNum));
+            sheduleDayList.add(new SheduleDay("", i + 1, weekNum));
         for (Shedule shedule : list) {
             final SheduleDay sheduleDay = sheduleDayList.get(shedule.getDayOfWeek());
             sheduleDay.setDayName(shedule.getDayName());
@@ -92,5 +92,12 @@ public class SheduleService {
      */
     public SheduleDay getSheduleTomorrow(Group group) {
         return this.getSheduleByDate(group, LocalDate.now().plusDays(1));
+    }
+
+    public List<SheduleDay> getSheduleFirstWeek(Group groupSheduleShow) throws Exception {
+        return this.getSheduleByWeek(groupSheduleShow, 1);
+    }
+    public List<SheduleDay> getSheduleSecondWeek(Group groupSheduleShow) throws Exception {
+        return this.getSheduleByWeek(groupSheduleShow, 2);
     }
 }
