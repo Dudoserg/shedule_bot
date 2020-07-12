@@ -3,6 +3,10 @@ package com.shedule.shedule_bot.service.BotService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shedule.shedule_bot.entity.*;
+import com.shedule.shedule_bot.entity.Db.Faculty;
+import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.TimeSubject;
+import com.shedule.shedule_bot.entity.Db.UserTg;
 import com.shedule.shedule_bot.service.*;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
@@ -18,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;

@@ -1,8 +1,8 @@
 package com.shedule.shedule_bot.service;
 
-import com.shedule.shedule_bot.entity.Day;
-import com.shedule.shedule_bot.entity.Group;
-import com.shedule.shedule_bot.entity.Shedule;
+import com.shedule.shedule_bot.entity.Db.Day;
+import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule;
 import com.shedule.shedule_bot.entity.SheduleDay;
 import com.shedule.shedule_bot.repo.SheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;

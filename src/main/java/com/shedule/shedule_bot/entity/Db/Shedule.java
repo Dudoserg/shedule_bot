@@ -1,6 +1,5 @@
-package com.shedule.shedule_bot.entity;
+package com.shedule.shedule_bot.entity.Db;
 
-import com.shedule.shedule_bot.parser.GroupInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,9 +22,13 @@ public class Shedule {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    @ManyToOne
+    @JoinColumn(name = "subjectType_id", nullable = false)
+    private SubjectType subjectType ;
 
-    private String subjectType = null;
-    private String cabinet = null;
+    @ManyToOne
+    @JoinColumn(name = "cabinet_id", nullable = false)
+    private Cabinet cabinet;
 
     private Integer week = null;
 

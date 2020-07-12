@@ -1,8 +1,7 @@
 package com.shedule.shedule_bot.service;
 
-import com.shedule.shedule_bot.entity.UserTg;
+import com.shedule.shedule_bot.entity.Db.UserTg;
 import com.shedule.shedule_bot.repo.UserTgRepo;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

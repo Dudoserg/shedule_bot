@@ -1,12 +1,11 @@
 package com.shedule.shedule_bot.repo;
 
-import com.shedule.shedule_bot.entity.Day;
-import com.shedule.shedule_bot.entity.Group;
-import com.shedule.shedule_bot.entity.Shedule;
+import com.shedule.shedule_bot.entity.Db.Day;
+import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface SheduleRepo extends JpaRepository<Shedule, Long > {

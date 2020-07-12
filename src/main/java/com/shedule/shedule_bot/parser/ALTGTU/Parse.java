@@ -3,7 +3,7 @@ package com.shedule.shedule_bot.parser.ALTGTU;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shedule.shedule_bot.entity.*;
+import com.shedule.shedule_bot.entity.Db.*;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
@@ -48,35 +48,51 @@ import java.util.stream.Collectors;
 @Service
 public class Parse {
 
-    @Autowired
+    final
     SheduleRepo sheduleRepo;
 
-    @Autowired
+    final
     FacultyRepo facultyRepo;
 
-    @Autowired
+    final
     TimeSubjectService timeSubjectService;
 
-    @Autowired
+    final
     TeacherRangService teacherRangService;
 
-    @Autowired
+    final
     SubjectService subjectService;
 
-    @Autowired
+    final
     TeacherService teacherService;
 
-    @Autowired
+    final
     DayService dayService;
 
-    @Autowired
+    final
+    CabinetService cabinetService;
+
+    final
+    SubjectTypeService subjectTypeService;
+
+    final
     GroupRepo groupRepo;
 
     List<String> daysList = new ArrayList<>(Arrays.asList(
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     ));
 
-    public Parse() throws JsonProcessingException, InterruptedException {
+    public Parse(SheduleRepo sheduleRepo, FacultyRepo facultyRepo, TimeSubjectService timeSubjectService, TeacherRangService teacherRangService, SubjectService subjectService, TeacherService teacherService, DayService dayService, CabinetService cabinetService, SubjectTypeService subjectTypeService, GroupRepo groupRepo) throws JsonProcessingException, InterruptedException {
+        this.sheduleRepo = sheduleRepo;
+        this.facultyRepo = facultyRepo;
+        this.timeSubjectService = timeSubjectService;
+        this.teacherRangService = teacherRangService;
+        this.subjectService = subjectService;
+        this.teacherService = teacherService;
+        this.dayService = dayService;
+        this.cabinetService = cabinetService;
+        this.subjectTypeService = subjectTypeService;
+        this.groupRepo = groupRepo;
     }
 
     public void start() throws JsonProcessingException, InterruptedException {
@@ -106,6 +122,8 @@ public class Parse {
         Lock lockTeacher = new ReentrantLock();
         Lock lockSubject = new ReentrantLock();
         Lock lockDay = new ReentrantLock();
+        Lock lockCabinet = new ReentrantLock();
+        Lock lockSubjectType = new ReentrantLock();
 
         for (GroupInfo groupInfo : groupList) {
             workQueue.execute(() -> {
@@ -154,9 +172,15 @@ public class Parse {
                         shedule.setSubject(subject);
                         lockSubject.unlock();
 
-                        shedule.setSubjectType(sheduleParser.getSubject_type());
+                        lockSubjectType.lock();
+                        final SubjectType subjectType = subjectTypeService.getByName(sheduleParser.getSubject_type());
+                        shedule.setSubjectType(subjectType);
+                        lockSubjectType.unlock();
 
-                        shedule.setCabinet(sheduleParser.getCabinet());
+                        lockCabinet.lock();
+                        Cabinet cabinet = cabinetService.findByTitle(sheduleParser.getCabinet());
+                        shedule.setCabinet(cabinet);
+                        lockCabinet.unlock();
 
                         lockTeacherRang.lock();
                         final TeacherRang teacherRang

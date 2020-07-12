@@ -1,6 +1,5 @@
-package com.shedule.shedule_bot.entity;
+package com.shedule.shedule_bot.entity.Db;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

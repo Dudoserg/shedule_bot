@@ -1,7 +1,7 @@
 package com.shedule.shedule_bot.service;
 
-import com.shedule.shedule_bot.entity.Teacher;
-import com.shedule.shedule_bot.entity.TeacherRang;
+import com.shedule.shedule_bot.entity.Db.Teacher;
+import com.shedule.shedule_bot.entity.Db.TeacherRang;
 import com.shedule.shedule_bot.repo.TeacherRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

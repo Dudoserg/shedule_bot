@@ -1,10 +1,9 @@
 package com.shedule.shedule_bot.repo;
 
-import com.shedule.shedule_bot.entity.Faculty;
+import com.shedule.shedule_bot.entity.Db.Faculty;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 
 public class GroupRepoCustomImpl implements GroupRepoCustom {
 
