@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.Day;
 import com.shedule.shedule_bot.repo.DayRepo;
@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DayService {
-    @Autowired
+    final
     DayRepo dayRepo;
+
+    public DayService(DayRepo dayRepo) {
+        this.dayRepo = dayRepo;
+    }
 
     public Day findByDayNameEquals(String dayName){
         Day day = dayRepo.findByDayNameEquals(dayName);;

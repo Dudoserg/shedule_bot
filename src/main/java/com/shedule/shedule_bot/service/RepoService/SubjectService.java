@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 
 import com.shedule.shedule_bot.entity.Db.Subject;
@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SubjectService {
-    @Autowired
+    final
     SubjectRepo subjectRepo;
+
+    public SubjectService(SubjectRepo subjectRepo) {
+        this.subjectRepo = subjectRepo;
+    }
 
     public Subject findByName(String subjectName){
         Subject subject = subjectRepo.findBySubjectNameEquals(subjectName);

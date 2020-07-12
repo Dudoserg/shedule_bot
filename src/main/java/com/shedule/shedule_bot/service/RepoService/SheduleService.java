@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.Day;
 import com.shedule.shedule_bot.entity.Db.Group;
@@ -17,11 +17,16 @@ import java.util.Locale;
 @Service
 public class SheduleService {
 
-    @Autowired
+    final
     SheduleRepo sheduleRepo;
 
-    @Autowired
+    final
     DayService dayService;
+
+    public SheduleService(SheduleRepo sheduleRepo, DayService dayService) {
+        this.sheduleRepo = sheduleRepo;
+        this.dayService = dayService;
+    }
 
 //    public List<Shedule> findAllByGroupName(String groupName){
 //        final List<Shedule> allByGroup_name = sheduleRepo.findAllByGroupName(groupName);

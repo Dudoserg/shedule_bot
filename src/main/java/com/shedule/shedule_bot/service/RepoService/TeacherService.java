@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.Teacher;
 import com.shedule.shedule_bot.entity.Db.TeacherRang;
@@ -9,11 +9,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeacherService {
 
-    @Autowired
+    final
     TeacherRepo teacherRepo;
 
+    public TeacherService(TeacherRepo teacherRepo) {
+        this.teacherRepo = teacherRepo;
+    }
 
-    public Teacher getTeacherByName(String name, TeacherRang teacherRang)  {
+
+    public Teacher getTeacherByName(String name, TeacherRang teacherRang) {
         Teacher teacher = teacherRepo.findAllByNameAndTeacherRang(name, teacherRang);
         if (teacher == null) {
             teacher = new Teacher(name, teacherRang);

@@ -42,8 +42,8 @@ public class SheduleDay {
                     })
                     .collect(Collectors.joining(" "));
             stringBuilder.append(subjectFirstUpper).append(" ");
-            stringBuilder.append(shedule.getSubjectType()).append(" ");
-            stringBuilder.append(shedule.getCabinet()).append(" - ");
+            stringBuilder.append(shedule.getSubjectType().getName()).append(" ");
+            stringBuilder.append(shedule.getCabinet().getCabinetTitle()).append(" - ");
             stringBuilder.append(italic(shedule.getTeacher().getName())).append(" - ");
             stringBuilder.append(shedule.getTeacher().getTeacherRang().getRangName());
             stringBuilder.append("\n");

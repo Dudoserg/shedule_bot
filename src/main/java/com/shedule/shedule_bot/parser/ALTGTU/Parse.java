@@ -8,7 +8,7 @@ import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
 import com.shedule.shedule_bot.repo.*;
-import com.shedule.shedule_bot.service.*;
+import com.shedule.shedule_bot.service.RepoService.*;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
@@ -23,7 +23,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

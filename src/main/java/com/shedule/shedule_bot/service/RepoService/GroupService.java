@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.Faculty;
 import com.shedule.shedule_bot.entity.Db.Group;
@@ -10,8 +10,12 @@ import java.util.List;
 
 @Service
 public class GroupService {
-    @Autowired
+    final
     GroupRepo groupRepo;
+
+    public GroupService(GroupRepo groupRepo) {
+        this.groupRepo = groupRepo;
+    }
 
     public List<Group> getGroupByFaculty(Faculty faculty){
         return groupRepo.findGroupByFaculty(faculty);

@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.TeacherRang;
 import com.shedule.shedule_bot.repo.TeacherRangRepo;
@@ -7,8 +7,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TeacherRangService {
-    @Autowired
+    final
     TeacherRangRepo teacherRangRepo;
+
+    public TeacherRangService(TeacherRangRepo teacherRangRepo) {
+        this.teacherRangRepo = teacherRangRepo;
+    }
 
 
     public TeacherRang getByRangName(String rangName){

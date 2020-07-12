@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.TimeSubject;
 import com.shedule.shedule_bot.repo.TimeSubjectRepo;
@@ -10,8 +10,12 @@ import java.util.List;
 
 @Service
 public class TimeSubjectService {
-    @Autowired
+    final
     TimeSubjectRepo timeSubjectRepo;
+
+    public TimeSubjectService(TimeSubjectRepo timeSubjectRepo) {
+        this.timeSubjectRepo = timeSubjectRepo;
+    }
 
     public TimeSubject getByStartEnd(Integer timeStart, Integer timeEnd) {
         TimeSubject timeSubject = timeSubjectRepo.findAllByTimeStartEqualsAndTimeEndEquals(timeStart, timeEnd);

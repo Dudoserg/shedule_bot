@@ -1,15 +1,19 @@
 package com.shedule.shedule_bot.controller;
 
 
-import com.shedule.shedule_bot.service.SheduleService;
+import com.shedule.shedule_bot.service.RepoService.SheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class MainController {
 
-    @Autowired
+    final
     SheduleService sheduleService;
+
+    public MainController(SheduleService sheduleService) {
+        this.sheduleService = sheduleService;
+    }
 
 //    @RequestMapping(value = "/test", method = GET)
 //    public ResponseEntity<Object> account() throws NotFoundException {

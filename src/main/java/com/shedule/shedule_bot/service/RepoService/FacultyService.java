@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.service;
+package com.shedule.shedule_bot.service.RepoService;
 
 import com.shedule.shedule_bot.entity.Db.Faculty;
 import com.shedule.shedule_bot.repo.FacultyRepo;
@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class FacultyService {
 
-    @Autowired
+    final
     FacultyRepo facultyRepo;
+
+    public FacultyService(FacultyRepo facultyRepo) {
+        this.facultyRepo = facultyRepo;
+    }
 
     public List<Faculty> getAllFaculty(){
         return facultyRepo.findAll();

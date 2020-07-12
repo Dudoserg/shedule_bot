@@ -7,7 +7,7 @@ import com.shedule.shedule_bot.entity.Db.Faculty;
 import com.shedule.shedule_bot.entity.Db.Group;
 import com.shedule.shedule_bot.entity.Db.TimeSubject;
 import com.shedule.shedule_bot.entity.Db.UserTg;
-import com.shedule.shedule_bot.service.*;
+import com.shedule.shedule_bot.service.RepoService.*;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
 import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
@@ -30,19 +30,27 @@ import java.util.stream.IntStream;
 
 @Service
 public class BotService {
-    @Autowired
+    final
     UserTgService userTgService;
 
-    @Autowired
+    final
     SheduleService sheduleService;
 
-    @Autowired
+    final
     FacultyService facultyService;
 
-    @Autowired
+    final
     GroupService groupService;
 
     private final String BASE_URL = "api.telegram.org";
+
+    public BotService(UserTgService userTgService, SheduleService sheduleService, FacultyService facultyService, GroupService groupService, TimeSubjectService timeSubjectService) {
+        this.userTgService = userTgService;
+        this.sheduleService = sheduleService;
+        this.facultyService = facultyService;
+        this.groupService = groupService;
+        this.timeSubjectService = timeSubjectService;
+    }
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -322,8 +330,8 @@ public class BotService {
                     default: {
                         userTg.getFeedbackList().add(message.getText());
                         sendMessage(token, chatId, "Спасибо! Ваш отзыв поможет улучшить бота.");
-                        result = state_8(token, chatId);
-                        userTg.updateState(8);
+                        result = state_6(token, chatId);
+                        userTg.updateState(6);
                         break;
                     }
                 }
@@ -995,7 +1003,7 @@ public class BotService {
     }
 
 
-    @Autowired
+    final
     TimeSubjectService timeSubjectService;
 
     private String getSchoolTime() {
