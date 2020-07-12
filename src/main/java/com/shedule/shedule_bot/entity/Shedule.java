@@ -14,23 +14,28 @@ public class Shedule {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    private String time = null;
 
     @ManyToOne
     @JoinColumn(name = "timeSubject_id", nullable = false)
     private TimeSubject timeSubject;
 
-    private String subject = null;
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false)
+    private Subject subject;
+
+
     private String subjectType = null;
     private String cabinet = null;
-    private String teacher = null;
-    private String teacherRang = null;
+
     private Integer week = null;
     private String dayName = null;
     private Integer dayOfWeek = -1;
     private Integer starYear = -1;
 
 
+    @ManyToOne
+    @JoinColumn(name = "teacher_id", nullable = false)
+    private Teacher teacher;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)

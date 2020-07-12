@@ -25,6 +25,7 @@ public class TimeSubject {
 
     public TimeSubject() {
     }
+
     public TimeSubject(Integer timeStart, Integer timeEnd, String timeStartStr, String timeEndStr) {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
@@ -33,4 +34,7 @@ public class TimeSubject {
     }
 
 
+    public String getStartToEndStr() {
+        return timeStartStr + " : " + timeEndStr;
+    }
 }

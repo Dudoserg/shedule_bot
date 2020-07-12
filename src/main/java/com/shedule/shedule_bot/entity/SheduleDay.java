@@ -28,8 +28,8 @@ public class SheduleDay {
         stringBuilder.append(pre(sheduleList.get(0).getDayName()));
         stringBuilder.append("\n");
         for (Shedule shedule : sheduleList) {
-            stringBuilder.append(underline(shedule.getTime())).append("  ");
-            String subject = shedule.getSubject();
+            stringBuilder.append(underline(shedule.getTimeSubject().getStartToEndStr())).append("  ");
+            String subject = shedule.getSubject().getSubjectName();
             final String subjectFirstUpper = Arrays.asList(
                     subject.trim().split(" ")
             ).stream()
@@ -43,8 +43,8 @@ public class SheduleDay {
             stringBuilder.append(subjectFirstUpper).append(" ");
             stringBuilder.append(shedule.getSubjectType()).append(" ");
             stringBuilder.append(shedule.getCabinet()).append(" - ");
-            stringBuilder.append(italic(shedule.getTeacher())).append(" - ");
-            stringBuilder.append(shedule.getTeacherRang());
+            stringBuilder.append(italic(shedule.getTeacher().getName())).append(" - ");
+            stringBuilder.append(shedule.getTeacher().getTeacherRang().getRangName());
             stringBuilder.append("\n");
         }
         stringBuilder.append("\n");

@@ -3,16 +3,14 @@ package com.shedule.shedule_bot.parser.ALTGTU;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shedule.shedule_bot.entity.Faculty;
-import com.shedule.shedule_bot.entity.Group;
-import com.shedule.shedule_bot.entity.Shedule;
-import com.shedule.shedule_bot.entity.TimeSubject;
+import com.shedule.shedule_bot.entity.*;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
-import com.shedule.shedule_bot.repo.FacultyRepo;
-import com.shedule.shedule_bot.repo.GroupRepo;
-import com.shedule.shedule_bot.repo.SheduleRepo;
+import com.shedule.shedule_bot.repo.*;
+import com.shedule.shedule_bot.service.SubjectService;
+import com.shedule.shedule_bot.service.TeacherRangService;
+import com.shedule.shedule_bot.service.TeacherService;
 import com.shedule.shedule_bot.service.TimeSubjectService;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
@@ -55,12 +53,20 @@ public class Parse {
     @Autowired
     SheduleRepo sheduleRepo;
 
-
     @Autowired
     FacultyRepo facultyRepo;
 
     @Autowired
     TimeSubjectService timeSubjectService;
+
+    @Autowired
+    TeacherRangService teacherRangService;
+
+    @Autowired
+    SubjectService subjectService;
+
+    @Autowired
+    TeacherService teacherService;
 
     @Autowired
     GroupRepo groupRepo;
@@ -92,6 +98,9 @@ public class Parse {
         Lock lockGroup = new ReentrantLock();
         Lock lockTimeSubject = new ReentrantLock();
         Lock lockShedule = new ReentrantLock();
+        Lock lockTeacherRang = new ReentrantLock();
+        Lock lockTeacher = new ReentrantLock();
+        Lock lockSubject = new ReentrantLock();
 
         for (GroupInfo groupInfo : groupList) {
             workQueue.execute(() -> {
@@ -128,24 +137,43 @@ public class Parse {
                 if (groupSheduleParser.size() != 0) {
                     for (Shedule_parser sheduleParser : groupSheduleParser) {
                         Shedule shedule = new Shedule();
-                        shedule.setTime(sheduleParser.getTime());
+
                         lockTimeSubject.lock();
                         final TimeSubject timeSubject =
                                 timeSubjectService.getByStartEnd(sheduleParser.getTimeStart(), sheduleParser.getTimeFinish());
                         shedule.setTimeSubject(timeSubject);
                         lockTimeSubject.unlock();
-                        shedule.setSubject(sheduleParser.getSubject());
+
+                        lockSubject.lock();
+                        Subject subject = subjectService.findByName(sheduleParser.getSubject());
+                        shedule.setSubject(subject);
+                        lockSubject.unlock();
+
                         shedule.setSubjectType(sheduleParser.getSubject_type());
+
                         shedule.setCabinet(sheduleParser.getCabinet());
-                        shedule.setTeacher(sheduleParser.getTeacher());
-                        shedule.setTeacherRang(sheduleParser.getTeacher_rang());
+
+                        lockTeacherRang.lock();
+                        final TeacherRang teacherRang
+                                = teacherRangService.getByRangName(sheduleParser.getTeacher_rang());
+                        lockTeacherRang.unlock();
+
+                        lockTeacher.lock();
+                        final Teacher teacher =
+                                teacherService.getTeacherByName(sheduleParser.getTeacher(), teacherRang);
+                        shedule.setTeacher(teacher);
+                        lockTeacher.unlock();
+
                         shedule.setWeek(sheduleParser.getWeek());
+
                         shedule.setDayName(sheduleParser.getDayName());
+
                         shedule.setStarYear(groupInfo.getStart_year());
 
-
                         shedule.setGroup(group);
+
                         shedule.calCulateDayOfWeek();
+
                         lockShedule.lock();
                         shedule = sheduleRepo.save(shedule);
                         lockShedule.unlock();

@@ -21,7 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class BotController {
 
     private final String TOKEN = "1277316228:AAFhTvIAwAxg-J5XWbqLCQfglbWkO3DmXm0";
-    private final String HOST_URL = "https://78aa17d506fd.ngrok.io";
+    private final String HOST_URL = "https://a92fba1732cb.ngrok.io";
     final BotService botService;
 
     public BotController(BotService botService) {
