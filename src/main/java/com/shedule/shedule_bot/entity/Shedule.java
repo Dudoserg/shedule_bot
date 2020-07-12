@@ -15,6 +15,11 @@ public class Shedule {
     Long id;
 
     private String time = null;
+
+    @ManyToOne
+    @JoinColumn(name = "timeSubject_id", nullable = false)
+    private TimeSubject timeSubject;
+
     private String subject = null;
     private String subjectType = null;
     private String cabinet = null;
@@ -24,6 +29,7 @@ public class Shedule {
     private String dayName = null;
     private Integer dayOfWeek = -1;
     private Integer starYear = -1;
+
 
 
     @ManyToOne

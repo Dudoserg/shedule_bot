@@ -6,6 +6,8 @@ import lombok.Setter;
 @Getter @Setter
 public class Shedule_parser {
     private String time = null;
+    private Integer timeStart = null;
+    private Integer timeFinish = null;
     private String subject = null;
     private String subject_type = null;
     private String cabinet = null;

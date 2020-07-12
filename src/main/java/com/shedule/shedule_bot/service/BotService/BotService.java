@@ -2,13 +2,8 @@ package com.shedule.shedule_bot.service.BotService;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.shedule.shedule_bot.entity.Faculty;
-import com.shedule.shedule_bot.entity.Group;
-import com.shedule.shedule_bot.entity.SheduleDay;
-import com.shedule.shedule_bot.entity.UserTg;
-import com.shedule.shedule_bot.service.FacultyService;
-import com.shedule.shedule_bot.service.GroupService;
-import com.shedule.shedule_bot.service.SheduleService;
+import com.shedule.shedule_bot.entity.*;
+import com.shedule.shedule_bot.service.*;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
 import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
@@ -18,13 +13,17 @@ import com.shedule.shedule_bot.service.TgBot.Objects.KeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.ReplyKeyboardMarkup;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import com.shedule.shedule_bot.service.TgBot.TgBot;
-import com.shedule.shedule_bot.service.UserTgService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -44,6 +43,8 @@ public class BotService {
 
     private final String BASE_URL = "api.telegram.org";
 
+
+    @Transactional(rollbackFor = Exception.class)
     public boolean receivedMessageFromUser(String token, Update update) throws Exception {
 //        if (update.getMessage() == null || update.getMessage().getChat() == null || update.getMessage().getChat().getId() == null) {
 //            return false;
@@ -142,6 +143,11 @@ public class BotService {
                 final Message message = update.getMessage();
                 final Chat chat = message.getChat();
                 final String chatId = chat.getId();
+                if (message.getText().equals("Назад")) {
+                    state_2(token, chatId);
+                    userTg.updateState(2);
+                    break;
+                }
 
                 final Faculty savedFaculty = userTg.getSaveFaculty_1();
                 // вычисляем максимально возможный курс на данном факультете
@@ -174,6 +180,11 @@ public class BotService {
                 final Message message = update.getMessage();
                 final Chat chat = message.getChat();
                 final String chatId = chat.getId();
+                if (message.getText().equals("Назад")) {
+                    state_3(token, chatId, userTg.getSaveFaculty_1());
+                    userTg.updateState(3);
+                    break;
+                }
 
                 final String groupName = message.getText(); // извлекаем из сообщения пользователя текст, в нем должна быть группа
                 // проверяем что такой выбор был
@@ -186,12 +197,12 @@ public class BotService {
                 if (selectedGroup != null) {
                     if (userTg.getFlagCurrentGroup()) {
                         // переходим в состояние 5, если flag_currentGroup == true
-                        result = state_5(token, chatId, userTg);
+                        result = state_5(token, chatId);
                         userTg.updateState(5);
                         userTg.setSavedGroup_1(selectedGroup);
                     } else if (userTg.getFlagAnotherGroup()) {
                         // переходим в состояние 8, если flag_anotherGroup == true
-                        result = state_8(token, chatId, userTg);
+                        result = state_8(token, chatId);
                         userTg.updateState(8);
                         userTg.setSavedAnotherGroup_1(selectedGroup);
                     }
@@ -217,8 +228,15 @@ public class BotService {
                 switch (message.getText()) {
                     case "Расписание моей группы": {
                         // просто переходим на 8е состояние
-                        result = state_8(token, chatId, userTg);
+                        result = state_8(token, chatId);
                         userTg.updateState(8);
+                        break;
+                    }
+                    case "Время пар": {
+                        // выводим время пар
+                        String str = this.getSchoolTime();
+                        sendMessage(token, chatId, str);
+                        result = state_5(token, chatId);
                         break;
                     }
 //                    case "Расписание другой группы": {
@@ -236,7 +254,7 @@ public class BotService {
                     default: {
                         // Говорим что ошибка, заново выводим 5е состояние
                         sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, выберите один из пунктов меню:");
-                        result = state_5(token, chatId, userTg);
+                        result = state_5(token, chatId);
                         userTg.updateState(5);
                     }
                 }
@@ -255,6 +273,11 @@ public class BotService {
 
                 final boolean isVerify = this.verifyAnswerByKeyboard(keyboard_state_6, message.getText());
                 switch (message.getText()) {
+                    case "Назад": {
+                        result = state_5(token, chatId);
+                        userTg.updateState(5);
+                        break;
+                    }
                     case "Поменять группу": {
                         result = state_0(token, chatId);
                         userTg.updateState(0);
@@ -263,6 +286,12 @@ public class BotService {
                     case "Обратная связь": {
                         result = state_7(token, chatId);
                         userTg.updateState(7);
+                        break;
+                    }
+                    case "Автор бота": {
+                        sendMessage(token, chatId, " ● @DudoSerg");
+                        result = state_6(token, chatId);
+                        userTg.updateState(6);
                         break;
                     }
                     default: {
@@ -274,13 +303,30 @@ public class BotService {
                 break;
             }
             case 7: {
+                SendMessageResult result = null;
                 // в этом состойнии мы должны получить Message, а ни что-то другое
                 if (update.getMessage() == null || update.getMessage().getChat() == null || update.getMessage().getChat().getId() == null) {
-                    throw new Exception("Данный случай пока что не обработан (state 5)");
+                    throw new Exception("Данный случай пока что не обработан (state 7)");
                 }
                 final Message message = update.getMessage();
                 final Chat chat = message.getChat();
                 final String chatId = chat.getId();
+                final boolean isVerified = verifyAnswerByKeyboard(keyboard_state_7, message.getText());
+                switch (message.getText()) {
+                    case "Назад": {
+                        result = state_6(token, chatId);
+                        userTg.updateState(6);
+                        break;
+                    }
+                    default: {
+                        userTg.getFeedbackList().add(message.getText());
+                        sendMessage(token, chatId, "Спасибо! Ваш отзыв поможет улучшить бота.");
+                        result = state_8(token, chatId);
+                        userTg.updateState(8);
+                        break;
+                    }
+                }
+                break;
             }
             case 8: {
                 SendMessageResult result = null;
@@ -297,6 +343,11 @@ public class BotService {
                 State_8 state_8_object = new State_8();
                 boolean isValidate = state_8_object.verifyPossibleButtons(message.getText());
                 if (isValidate) {
+                    if (message.getText().equals("Назад")) {
+                        result = state_5(token, chatId);
+                        userTg.updateState(5);
+                        break;
+                    }
                     TgBot tgBot = new TgBot();
 
                     Group groupSheduleShow = null;
@@ -338,7 +389,7 @@ public class BotService {
 
                 } else {
                     sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, повторите ввод.");
-                    result = state_8(token, chatId, userTg);    // заново отправляем вопрос про день
+                    result = state_8(token, chatId);    // заново отправляем вопрос про день
                 }
                 break;
             }
@@ -393,7 +444,7 @@ public class BotService {
                         SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
                         // переводим опять на главнео меню
                         userTg.updateState(5);
-                        result = state_5(token, chatId, userTg);
+                        result = state_5(token, chatId);
 
 
                         break;
@@ -417,16 +468,23 @@ public class BotService {
         return true;
     }
 
-    private SendMessageResult state_7(String token, String chatId) throws Exception {
+    List<List<KeyboardButton>> keyboard_state_7 = new ArrayList<>(Collections.singletonList(
+            Collections.singletonList(new KeyboardButton("Назад"))
+    ));
 
+    private SendMessageResult state_7(String token, String chatId) throws Exception {
+        final ReplyKeyboardMarkup replyKeyboardMarkup =
+                ReplyKeyboardMarkup.builder(keyboard_state_7)
+                        .resize_keyboard(true)
+                        .build();
         // создаем объект сообщение
         final SendMessage_Method sendMessageMethod =
                 SendMessage_Method.builder(chatId, "Внесите ваше предложение по улучшению бота:")
+                        .reply_markup(replyKeyboardMarkup)
                         .build();
         // посылаем сообщение пользователю
         TgBot tgBot = new TgBot();
-        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
-        return sendMessageResult;
+        return tgBot.sendMessage(token, sendMessageMethod);
     }
 
 
@@ -469,9 +527,10 @@ public class BotService {
 
     // state_8 "На какой день вывести расписание?"
     // (в зависимости от флагов выведем расписание той или иной группы)
-    private SendMessageResult state_8(String token, String chatId, UserTg userTg) throws Exception {
+    private SendMessageResult state_8(String token, String chatId) throws Exception {
         // Создаем кнопки клавы
         List<List<KeyboardButton>> keyboard = new ArrayList<>(Arrays.asList(
+                Collections.singletonList(new KeyboardButton("Назад")),
                 Arrays.asList(new KeyboardButton("На сегодня"), new KeyboardButton("На завтра")),
                 Arrays.asList(new KeyboardButton("Первая неделя"), new KeyboardButton("Вторая неделя")),
                 Collections.singletonList(new KeyboardButton("Расписание на конкретную дату"))
@@ -511,8 +570,9 @@ public class BotService {
     }
 
     List<List<KeyboardButton>> keyboard_state_6 = new ArrayList<>(Arrays.asList(
+            Collections.singletonList(new KeyboardButton("Назад")),
             Collections.singletonList(new KeyboardButton("Поменять группу")),
-            Collections.singletonList(new KeyboardButton("Обратная связь"))
+            Arrays.asList(new KeyboardButton("Обратная связь"), new KeyboardButton("Автор бота"))
     ));
 
     private SendMessageResult state_6(String token, String chatId) throws Exception {
@@ -536,12 +596,13 @@ public class BotService {
 
     List<List<KeyboardButton>> keyboard_state_5 = new ArrayList<>(Arrays.asList(
             Collections.singletonList(new KeyboardButton("Расписание моей группы")),
+            Collections.singletonList(new KeyboardButton("Время пар")),
 //            Collections.singletonList(new KeyboardButton("Расписание другой группы")),
             Collections.singletonList(new KeyboardButton("Настройки"))
     ));
 
     // state 5 Выберите пункт меню:
-    private SendMessageResult state_5(String token, String chatId, UserTg usertg) throws Exception {
+    private SendMessageResult state_5(String token, String chatId) throws Exception {
         // создаем саму клаву
         ReplyKeyboardMarkup replyKeyboardMarkup
                 = ReplyKeyboardMarkup.builder(keyboard_state_5)
@@ -566,6 +627,7 @@ public class BotService {
         List<Group> groupList = getGroupsByFacultAndCourse(faculty, course);
         // Создаем кнопки клавы
         List<List<KeyboardButton>> keyboard = new ArrayList<>();
+        keyboard.add(Collections.singletonList(new KeyboardButton("Назад")));
         final int size = ((int) (groupList.size() / 3)) * 3;
         for (int i = 0; i < size; i += 3) {
             keyboard.add(
@@ -611,6 +673,7 @@ public class BotService {
 
         // Создаем кнопки клавы
         List<List<KeyboardButton>> keyboard = new ArrayList<>();
+        keyboard.add(Collections.singletonList(new KeyboardButton("Назад")));
         final int size = ((int) (countCoursesInThisFacult / 2)) * 2;
         for (int i = 0; i < size; i += 2) {
             keyboard.add(
@@ -646,6 +709,7 @@ public class BotService {
     //Выберите Факультет
     private SendMessageResult state_2(String token, String chatId) throws Exception {
         final List<Faculty> allFaculty = facultyService.getAllFaculty();
+        allFaculty.sort((o1, o2) -> o1.getFacultyName().compareToIgnoreCase(o2.getFacultyName()));
         // Создаем кнопки клавы
         List<List<KeyboardButton>> keyboard = new ArrayList<>();
         for (Faculty faculty : allFaculty) {
@@ -900,8 +964,8 @@ public class BotService {
                         .build();
         SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
         // переводим опять на главнео меню
-        userTg.updateState(5);
-        result = state_5(token, chatId, userTg);
+        userTg.updateState(8);
+        result = state_8(token, chatId);
         return result;
     }
 
@@ -925,7 +989,23 @@ public class BotService {
         SendMessageResult sendMessageResult_2 = tgBot.sendMessage(token, sendMessageMethod);
         // переводим опять на главнео меню
         userTg.updateState(5);
-        result = state_5(token, chatId, userTg);
+        result = state_5(token, chatId);
+        return result;
+    }
+
+
+    @Autowired
+    TimeSubjectService timeSubjectService;
+
+    private String getSchoolTime() {
+        final List<TimeSubject> schoolTime = timeSubjectService.getAll();
+        schoolTime.sort(Comparator.comparing(TimeSubject::getTimeStart));
+        AtomicInteger counter = new AtomicInteger(1);
+
+        final String result = schoolTime.stream()
+                .map(timeSubject -> counter.getAndIncrement() + " пара    "
+                        + timeSubject.getTimeStartStr() + " - " + timeSubject.getTimeEndStr())
+                .collect(Collectors.joining("\n"));
         return result;
     }
 }

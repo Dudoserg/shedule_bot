@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,6 +48,10 @@ public class UserTg {
     @ManyToOne
     @JoinColumn(name = "savedAnotherGroup_1", nullable = true)
     private Group savedAnotherGroup_1 = null;
+
+
+    @ElementCollection
+    private List<String> feedbackList = new ArrayList<>();
 
 
     // сохраняем айдишник сообщения с календарем

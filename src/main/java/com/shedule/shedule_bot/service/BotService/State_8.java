@@ -15,6 +15,7 @@ public class State_8 {
     List<List<String>> keyboard = new ArrayList<>();
 
     public State_8() {
+        keyboard.add(Collections.singletonList("Назад"));
         keyboard.add(Arrays.asList("На сегодня", "На завтра"));
         keyboard.add(Arrays.asList("Первая неделя", "Вторая неделя"));
         keyboard.add(Collections.singletonList("Расписание на конкретную дату"));

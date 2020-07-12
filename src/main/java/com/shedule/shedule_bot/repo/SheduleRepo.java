@@ -22,4 +22,5 @@ public interface SheduleRepo extends JpaRepository<Shedule, Long > {
     List<Shedule> findAllByGroupEqualsAndDayOfWeekEqualsAndWeekEquals(Group group, Integer dayOfWeek, Integer weekNumber);
 
     List<Shedule> findAllByGroupEqualsAndWeekEquals(Group group, Integer week);
+
 }

@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shedule.shedule_bot.entity.Faculty;
 import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.Shedule;
+import com.shedule.shedule_bot.entity.TimeSubject;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
 import com.shedule.shedule_bot.repo.FacultyRepo;
 import com.shedule.shedule_bot.repo.GroupRepo;
 import com.shedule.shedule_bot.repo.SheduleRepo;
+import com.shedule.shedule_bot.service.TimeSubjectService;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
@@ -37,6 +39,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +58,9 @@ public class Parse {
 
     @Autowired
     FacultyRepo facultyRepo;
+
+    @Autowired
+    TimeSubjectService timeSubjectService;
 
     @Autowired
     GroupRepo groupRepo;
@@ -76,7 +82,7 @@ public class Parse {
         final List<GroupInfo> groupList = this.getGroupList(idFacultsList);
         System.out.println(groupList.size());
 
-        //this.saveGroupSheduleToFile(groupList);
+        this.saveGroupSheduleToFile(groupList);
 
         AtomicInteger count = new AtomicInteger();
         int allCount = groupList.size();
@@ -84,6 +90,7 @@ public class Parse {
         WorkQueue workQueue = new WorkQueue(4);
         Lock lockFaculty = new ReentrantLock();
         Lock lockGroup = new ReentrantLock();
+        Lock lockTimeSubject = new ReentrantLock();
         Lock lockShedule = new ReentrantLock();
 
         for (GroupInfo groupInfo : groupList) {
@@ -122,6 +129,11 @@ public class Parse {
                     for (Shedule_parser sheduleParser : groupSheduleParser) {
                         Shedule shedule = new Shedule();
                         shedule.setTime(sheduleParser.getTime());
+                        lockTimeSubject.lock();
+                        final TimeSubject timeSubject =
+                                timeSubjectService.getByStartEnd(sheduleParser.getTimeStart(), sheduleParser.getTimeFinish());
+                        shedule.setTimeSubject(timeSubject);
+                        lockTimeSubject.unlock();
                         shedule.setSubject(sheduleParser.getSubject());
                         shedule.setSubjectType(sheduleParser.getSubject_type());
                         shedule.setCabinet(sheduleParser.getCabinet());
@@ -212,6 +224,15 @@ public class Parse {
                     Matcher matcher_time = Pattern.compile("(.*?)<strong>").matcher(html);
                     if (matcher_time.find())
                         time = (matcher_time.group(1)).trim();
+                    int timeStart = 0;
+                    int timeFinish = 0;
+                    {
+                        time = time.replace(" ", "");
+                        final String[] split = time.split("-");
+                        timeStart = LocalTime.parse(split[0] + ":00").toSecondOfDay();
+                        timeFinish = LocalTime.parse(split[1] + ":00").toSecondOfDay();
+
+                    }
                     html = html.substring(html.indexOf(time), html.length());
 
                     String subject = "";
@@ -276,6 +297,8 @@ public class Parse {
                     sheduleParser.setWeek(Integer.valueOf(week));
                     sheduleParser.setDayName(dayName);
                     sheduleParser.setTime(time);
+                    sheduleParser.setTimeStart(timeStart);
+                    sheduleParser.setTimeFinish(timeFinish);
                     sheduleParser.setSubject(subject);
                     subject_type = subject_type.trim();
                     if (subject_type.length() > 1 && !subject_type.contains(")"))

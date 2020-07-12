@@ -100,4 +100,9 @@ public class SheduleService {
     public List<SheduleDay> getSheduleSecondWeek(Group groupSheduleShow) throws Exception {
         return this.getSheduleByWeek(groupSheduleShow, 2);
     }
+
+
+//    public List<Integer> getSchoolTime(){
+//        return sheduleRepo.getDistinctSheduleTime();
+//    }
 }
