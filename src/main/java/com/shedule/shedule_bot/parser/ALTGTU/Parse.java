@@ -8,10 +8,7 @@ import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;
 import com.shedule.shedule_bot.repo.*;
-import com.shedule.shedule_bot.service.SubjectService;
-import com.shedule.shedule_bot.service.TeacherRangService;
-import com.shedule.shedule_bot.service.TeacherService;
-import com.shedule.shedule_bot.service.TimeSubjectService;
+import com.shedule.shedule_bot.service.*;
 import javafx.util.Pair;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.Header;
@@ -39,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -69,8 +67,14 @@ public class Parse {
     TeacherService teacherService;
 
     @Autowired
+    DayService dayService;
+
+    @Autowired
     GroupRepo groupRepo;
 
+    List<String> daysList = new ArrayList<>(Arrays.asList(
+            "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
+    ));
 
     public Parse() throws JsonProcessingException, InterruptedException {
     }
@@ -101,6 +105,7 @@ public class Parse {
         Lock lockTeacherRang = new ReentrantLock();
         Lock lockTeacher = new ReentrantLock();
         Lock lockSubject = new ReentrantLock();
+        Lock lockDay = new ReentrantLock();
 
         for (GroupInfo groupInfo : groupList) {
             workQueue.execute(() -> {
@@ -166,13 +171,15 @@ public class Parse {
 
                         shedule.setWeek(sheduleParser.getWeek());
 
-                        shedule.setDayName(sheduleParser.getDayName());
+                        lockDay.lock();
+                        final Day day = dayService.findByDayNameEquals(sheduleParser.getDayName());
+                        shedule.setDay(day);
+                        lockDay.unlock();
 
                         shedule.setStarYear(groupInfo.getStart_year());
 
                         shedule.setGroup(group);
 
-                        shedule.calCulateDayOfWeek();
 
                         lockShedule.lock();
                         shedule = sheduleRepo.save(shedule);

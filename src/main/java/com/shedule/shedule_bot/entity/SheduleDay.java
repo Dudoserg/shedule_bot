@@ -12,20 +12,19 @@ import java.util.stream.Collectors;
 @Setter
 // список предметов на день
 public class SheduleDay {
-    private String dayName;
-    private Integer dayOfWeek;
+    private Day day;
+
     private Integer week;
     private List<Shedule> sheduleList = new ArrayList<>();
 
-    public SheduleDay(String dayName, Integer dayOfWeek, Integer week) {
-        this.dayName = dayName;
-        this.dayOfWeek = dayOfWeek;
+    public SheduleDay(Day day, Integer week) {
+        this.day = day;
         this.week = week;
     }
 
     private String getString(){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(pre(sheduleList.get(0).getDayName()));
+        stringBuilder.append(pre(sheduleList.get(0).getDay().getDayName()));
         stringBuilder.append("\n");
         for (Shedule shedule : sheduleList) {
             stringBuilder.append(underline(shedule.getTimeSubject().getStartToEndStr())).append("  ");
@@ -56,7 +55,7 @@ public class SheduleDay {
         stringBuilder.append(bold("Неделя №" + week));
         stringBuilder.append("\n");
         if (sheduleList.size() == 0) {
-            if (this.getDayOfWeek() != 7)
+            if (this.getDay().getDayOfWeek() != 7)
                 stringBuilder.append("\nНа данный день расписания нет\n");
             else
                 stringBuilder.append("\nВоскресенье, можете отдохнуть =)\n");

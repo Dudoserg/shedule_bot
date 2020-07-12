@@ -1,5 +1,6 @@
 package com.shedule.shedule_bot.service;
 
+import com.shedule.shedule_bot.entity.Day;
 import com.shedule.shedule_bot.entity.Group;
 import com.shedule.shedule_bot.entity.Shedule;
 import com.shedule.shedule_bot.entity.SheduleDay;
@@ -18,6 +19,9 @@ public class SheduleService {
 
     @Autowired
     SheduleRepo sheduleRepo;
+
+    @Autowired
+    DayService dayService;
 
 //    public List<Shedule> findAllByGroupName(String groupName){
 //        final List<Shedule> allByGroup_name = sheduleRepo.findAllByGroupName(groupName);
@@ -42,10 +46,15 @@ public class SheduleService {
         int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
         weekNumber = (weekNumber % 2) + 1;
 
-        final List<Shedule> list = sheduleRepo.findAllByGroupEqualsAndDayOfWeekEqualsAndWeekEquals(group, dayOfWeek, weekNumber);
+
+        final Day day = dayService.findByDayOfWeekEquals(dayOfWeek);
+
+        final List<Shedule> list = sheduleRepo.findAllByGroupEqualsAndDayEqualsAndWeekEquals(group, day, weekNumber);
+
+
         if (list.size() == 0)
-            return new SheduleDay("", dayOfWeek, weekNumber);
-        final SheduleDay sheduleDay = new SheduleDay(list.get(0).getDayName(), list.get(0).getDayOfWeek(), list.get(0).getWeek());
+            return new SheduleDay(day, weekNumber);
+        final SheduleDay sheduleDay = new SheduleDay(list.get(0).getDay(), list.get(0).getWeek());
         sheduleDay.setSheduleList(list);
         return sheduleDay;
     }
@@ -64,11 +73,17 @@ public class SheduleService {
         }
         final List<Shedule> list = sheduleRepo.findAllByGroupEqualsAndWeekEquals(group, weekNum);
         List<SheduleDay> sheduleDayList = new ArrayList<>();
-        for (int i = 0; i < 7; i++)
-            sheduleDayList.add(new SheduleDay("", i + 1, weekNum));
+
+
+        for (int i = 0; i < 7; i++) {
+            final Day day = dayService.findByDayOfWeekEquals(i + 1);
+            sheduleDayList.add(new SheduleDay(day, weekNum));
+        }
         for (Shedule shedule : list) {
-            final SheduleDay sheduleDay = sheduleDayList.get(shedule.getDayOfWeek());
-            sheduleDay.setDayName(shedule.getDayName());
+            final SheduleDay sheduleDay = sheduleDayList.get(shedule.getDay().getDayOfWeek());
+            //sheduleDay.setDayName(shedule.getDayName());
+//            sheduleDay.getDay().setDayName(shedule.getDay());
+            shedule.setDay(shedule.getDay());
             sheduleDay.getSheduleList().add(shedule);
         }
         return sheduleDayList;
@@ -97,6 +112,7 @@ public class SheduleService {
     public List<SheduleDay> getSheduleFirstWeek(Group groupSheduleShow) throws Exception {
         return this.getSheduleByWeek(groupSheduleShow, 1);
     }
+
     public List<SheduleDay> getSheduleSecondWeek(Group groupSheduleShow) throws Exception {
         return this.getSheduleByWeek(groupSheduleShow, 2);
     }

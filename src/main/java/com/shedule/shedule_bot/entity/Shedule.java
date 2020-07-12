@@ -28,8 +28,15 @@ public class Shedule {
     private String cabinet = null;
 
     private Integer week = null;
-    private String dayName = null;
-    private Integer dayOfWeek = -1;
+
+
+    //    private String dayName = null;
+//    private Integer dayOfWeek = -1;
+    @ManyToOne
+    @JoinColumn(name = "day_id", nullable = false)
+    private Day day;
+
+
     private Integer starYear = -1;
 
 
@@ -42,20 +49,5 @@ public class Shedule {
     private Group group;
 
 
-    public void calCulateDayOfWeek(){
-        if( this.dayName.equals("Понедельник"))
-            this.dayOfWeek = 1;
-        else if( this.dayName.equals("Вторник"))
-            this.dayOfWeek = 2;
-        else if( this.dayName.equals("Среда"))
-            this.dayOfWeek = 3;
-        else if( this.dayName.equals("Четверг"))
-            this.dayOfWeek = 4;
-        else if( this.dayName.equals("Пятница"))
-            this.dayOfWeek = 5;
-        else if( this.dayName.equals("Суббота"))
-            this.dayOfWeek = 6;
-        else if( this.dayName.equals("Воскресенье"))
-            this.dayOfWeek = 7;
-    }
+
 }
