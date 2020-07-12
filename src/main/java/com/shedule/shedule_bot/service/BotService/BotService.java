@@ -229,10 +229,58 @@ public class BotService {
 //                        break;
 //                    }
                     case "Настройки": {
+                        result = state_6(token, chatId);
+                        userTg.updateState(6);
+                        break;
+                    }
+                    default: {
+                        // Говорим что ошибка, заново выводим 5е состояние
+                        sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, выберите один из пунктов меню:");
+                        result = state_5(token, chatId, userTg);
+                        userTg.updateState(5);
+                    }
+                }
+                break;
+            }
+            case 6: {
+                SendMessageResult result = null;
+
+                // в этом состойнии мы должны получить Message, а ни что-то другое
+                if (update.getMessage() == null || update.getMessage().getChat() == null || update.getMessage().getChat().getId() == null) {
+                    throw new Exception("Данный случай пока что не обработан (state 5)");
+                }
+                final Message message = update.getMessage();
+                final Chat chat = message.getChat();
+                final String chatId = chat.getId();
+
+                final boolean isVerify = this.verifyAnswerByKeyboard(keyboard_state_6, message.getText());
+                switch (message.getText()) {
+                    case "Поменять группу": {
+                        result = state_0(token, chatId);
+                        userTg.updateState(0);
+                        break;
+                    }
+                    case "Обратная связь": {
+                        result = state_7(token, chatId);
+                        userTg.updateState(7);
+                        break;
+                    }
+                    default: {
+                        sendMessage(token, chatId, "Возможно произошла ошибка, пожалуйста, выберите один из пунктов меню:");
+                        result = state_6(token, chatId);
                         break;
                     }
                 }
                 break;
+            }
+            case 7: {
+                // в этом состойнии мы должны получить Message, а ни что-то другое
+                if (update.getMessage() == null || update.getMessage().getChat() == null || update.getMessage().getChat().getId() == null) {
+                    throw new Exception("Данный случай пока что не обработан (state 5)");
+                }
+                final Message message = update.getMessage();
+                final Chat chat = message.getChat();
+                final String chatId = chat.getId();
             }
             case 8: {
                 SendMessageResult result = null;
@@ -261,7 +309,7 @@ public class BotService {
 
                     switch (message.getText()) {
                         case "На сегодня": {
-                            final SheduleDay  sheduleByDate = sheduleService.getSheduleToday(groupSheduleShow);
+                            final SheduleDay sheduleByDate = sheduleService.getSheduleToday(groupSheduleShow);
                             sendShedule(token, userTg, chatId, sheduleByDate);
                             break;
                         }
@@ -369,7 +417,17 @@ public class BotService {
         return true;
     }
 
+    private SendMessageResult state_7(String token, String chatId) throws Exception {
 
+        // создаем объект сообщение
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Внесите ваше предложение по улучшению бота:")
+                        .build();
+        // посылаем сообщение пользователю
+        TgBot tgBot = new TgBot();
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
+        return sendMessageResult;
+    }
 
 
     private SendMessageResult state_9(String token, String chatId, InlineKeyboardMarkup
@@ -384,9 +442,17 @@ public class BotService {
         return sendMessageResult;
     }
 
-    // state_9 отправляем календарь
-    // нужно запомнить айдишник сообщения, в котором отправили календарь
-    // нужно запомнить отправленный месяц
+    /**
+     * state_9 отправляем календарь
+     * // нужно запомнить айдишник сообщения, в котором отправили календарь
+     * // нужно запомнить отправленный месяц
+     *
+     * @param token
+     * @param chatId
+     * @param l
+     * @return
+     * @throws Exception
+     */
     private SendMessageResult state_9(String token, String chatId, LocalDate l) throws Exception {
         TgCalendar tgCalendar = new TgCalendar();
         InlineKeyboardMarkup inlineKeyboardMarkup = tgCalendar.createKeyboard(l);
@@ -443,6 +509,30 @@ public class BotService {
         }
         return false;
     }
+
+    List<List<KeyboardButton>> keyboard_state_6 = new ArrayList<>(Arrays.asList(
+            Collections.singletonList(new KeyboardButton("Поменять группу")),
+            Collections.singletonList(new KeyboardButton("Обратная связь"))
+    ));
+
+    private SendMessageResult state_6(String token, String chatId) throws Exception {
+        // создаем саму клаву
+        ReplyKeyboardMarkup replyKeyboardMarkup
+                = ReplyKeyboardMarkup.builder(keyboard_state_6)
+                .resize_keyboard(true)
+                .one_time_keyboard(false)
+                .build();
+        // создаем объект сообщение
+        final SendMessage_Method sendMessageMethod =
+                SendMessage_Method.builder(chatId, "Выберите пункт меню:")
+                        .reply_markup(replyKeyboardMarkup)
+                        .build();
+        // посылаем сообщение пользователю
+        TgBot tgBot = new TgBot();
+        final SendMessageResult sendMessageResult = tgBot.sendMessage(token, sendMessageMethod);
+        return sendMessageResult;
+    }
+
 
     List<List<KeyboardButton>> keyboard_state_5 = new ArrayList<>(Arrays.asList(
             Collections.singletonList(new KeyboardButton("Расписание моей группы")),
@@ -794,9 +884,10 @@ public class BotService {
 
     /**
      * Отправляем расписание пользователю
-     * @param token токен
-     * @param userTg пользователь, которому отправляем сообщение
-     * @param chatId чат
+     *
+     * @param token         токен
+     * @param userTg        пользователь, которому отправляем сообщение
+     * @param chatId        чат
      * @param sheduleByDate расписание
      * @throws Exception ошибка отправки
      */
@@ -816,9 +907,10 @@ public class BotService {
 
     /**
      * Отправляем расписание пользователю
-     * @param token токен
-     * @param userTg пользователь, которому отправляем сообщение
-     * @param chatId айдишник чата
+     *
+     * @param token       токен
+     * @param userTg      пользователь, которому отправляем сообщение
+     * @param chatId      айдишник чата
      * @param sheduleList расписание на несколько дней
      * @return SendMessageResult
      * @throws Exception Exception
