@@ -2,7 +2,7 @@ package com.shedule.shedule_bot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shedule.shedule_bot.parser.ALTGTU.Parse;
-import com.shedule.shedule_bot.service.RepoService.SheduleService;
+import com.shedule.shedule_bot.service.RepoService.SheduleServiceImpl;
 import javassist.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class ParserController {
 
     final Parse parse;
-    final SheduleService sheduleService;
+    final SheduleServiceImpl sheduleService;
 
-    public ParserController(Parse parse, SheduleService sheduleService) {
+    public ParserController(Parse parse, SheduleServiceImpl sheduleService) {
         this.parse = parse;
         this.sheduleService = sheduleService;
     }

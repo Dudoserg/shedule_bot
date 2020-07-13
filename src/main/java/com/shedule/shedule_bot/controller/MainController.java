@@ -1,17 +1,16 @@
 package com.shedule.shedule_bot.controller;
 
 
-import com.shedule.shedule_bot.service.RepoService.SheduleService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.shedule.shedule_bot.service.RepoService.SheduleServiceImpl;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class MainController {
 
     final
-    SheduleService sheduleService;
+    SheduleServiceImpl sheduleService;
 
-    public MainController(SheduleService sheduleService) {
+    public MainController(SheduleServiceImpl sheduleService) {
         this.sheduleService = sheduleService;
     }
 

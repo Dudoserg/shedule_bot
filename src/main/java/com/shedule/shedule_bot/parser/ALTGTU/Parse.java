@@ -54,25 +54,25 @@ public class Parse {
     FacultyRepo facultyRepo;
 
     final
-    TimeSubjectService timeSubjectService;
+    TimeSubjectServiceImpl timeSubjectService;
 
     final
-    TeacherRangService teacherRangService;
+    TeacherRangServiceImpl teacherRangService;
 
     final
-    SubjectService subjectService;
+    SubjectServiceImpl subjectService;
 
     final
-    TeacherService teacherService;
+    TeacherServiceImpl teacherService;
 
     final
-    DayService dayService;
+    DayServiceImpl dayService;
 
     final
-    CabinetService cabinetService;
+    CabinetServiceImpl cabinetService;
 
     final
-    SubjectTypeService subjectTypeService;
+    SubjectTypeServiceImpl subjectTypeService;
 
     final
     GroupRepo groupRepo;
@@ -81,7 +81,7 @@ public class Parse {
             "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"
     ));
 
-    public Parse(SheduleRepo sheduleRepo, FacultyRepo facultyRepo, TimeSubjectService timeSubjectService, TeacherRangService teacherRangService, SubjectService subjectService, TeacherService teacherService, DayService dayService, CabinetService cabinetService, SubjectTypeService subjectTypeService, GroupRepo groupRepo) throws JsonProcessingException, InterruptedException {
+    public Parse(SheduleRepo sheduleRepo, FacultyRepo facultyRepo, TimeSubjectServiceImpl timeSubjectService, TeacherRangServiceImpl teacherRangService, SubjectServiceImpl subjectService, TeacherServiceImpl teacherService, DayServiceImpl dayService, CabinetServiceImpl cabinetService, SubjectTypeServiceImpl subjectTypeService, GroupRepo groupRepo) throws JsonProcessingException, InterruptedException {
         this.sheduleRepo = sheduleRepo;
         this.facultyRepo = facultyRepo;
         this.timeSubjectService = timeSubjectService;
@@ -177,7 +177,7 @@ public class Parse {
                         lockSubjectType.unlock();
 
                         lockCabinet.lock();
-                        Cabinet cabinet = cabinetService.findByTitle(sheduleParser.getCabinet());
+                        Cabinet cabinet = cabinetService.getByTitle(sheduleParser.getCabinet());
                         shedule.setCabinet(cabinet);
                         lockCabinet.unlock();
 
@@ -195,7 +195,7 @@ public class Parse {
                         shedule.setWeek(sheduleParser.getWeek());
 
                         lockDay.lock();
-                        final Day day = dayService.findByDayNameEquals(sheduleParser.getDayName());
+                        final Day day = dayService.getByDayName(sheduleParser.getDayName());
                         shedule.setDay(day);
                         lockDay.unlock();
 

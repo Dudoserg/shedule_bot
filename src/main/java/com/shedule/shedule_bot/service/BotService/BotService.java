@@ -17,7 +17,6 @@ import com.shedule.shedule_bot.service.TgBot.Objects.KeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.ReplyKeyboardMarkup;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import com.shedule.shedule_bot.service.TgBot.TgBot;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,20 +30,20 @@ import java.util.stream.IntStream;
 @Service
 public class BotService {
     final
-    UserTgService userTgService;
+    UserTgServiceImpl userTgService;
 
     final
-    SheduleService sheduleService;
+    SheduleServiceImpl sheduleService;
 
     final
-    FacultyService facultyService;
+    FacultyServiceImpl facultyService;
 
     final
-    GroupService groupService;
+    GroupServiceImpl groupService;
 
     private final String BASE_URL = "api.telegram.org";
 
-    public BotService(UserTgService userTgService, SheduleService sheduleService, FacultyService facultyService, GroupService groupService, TimeSubjectService timeSubjectService) {
+    public BotService(UserTgServiceImpl userTgService, SheduleServiceImpl sheduleService, FacultyServiceImpl facultyService, GroupServiceImpl groupService, TimeSubjectServiceImpl timeSubjectService) {
         this.userTgService = userTgService;
         this.sheduleService = sheduleService;
         this.facultyService = facultyService;
@@ -1004,7 +1003,7 @@ public class BotService {
 
 
     final
-    TimeSubjectService timeSubjectService;
+    TimeSubjectServiceImpl timeSubjectService;
 
     private String getSchoolTime() {
         final List<TimeSubject> schoolTime = timeSubjectService.getAll();
