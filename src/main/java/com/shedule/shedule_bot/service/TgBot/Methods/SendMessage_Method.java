@@ -20,6 +20,7 @@ public class SendMessage_Method {
     //Sends the message silently. iOS users will not receive a notification,
     // Android users will receive a notification with no sound.
     private Boolean disable_notification = null;
+
     // If the message is a reply, ID of the original message
     private Integer reply_to_message_id = null;
     // Additional interface options. A JSON-serialized object for an inline keyboard,
