@@ -1,1 +1,1 @@
-java -jar target/shedule_bot-0.0.1-SNAPSHOT.jar
+java  -Xms64m -Xmx256m -Dfile.encoding=utf-8  -jar  target/shedule_bot-0.0.1-SNAPSHOT.jar

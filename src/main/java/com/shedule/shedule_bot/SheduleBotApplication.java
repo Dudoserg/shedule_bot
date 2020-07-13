@@ -6,15 +6,14 @@ import com.shedule.shedule_bot.repo.SheduleRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+//@EnableScheduling
 public class SheduleBotApplication {
 
-
-
-	public static void main(String[] args) {
-		SpringApplication.run(SheduleBotApplication.class, args);
-
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SheduleBotApplication.class, args);
+    }
 
 }
