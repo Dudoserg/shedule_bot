@@ -14,10 +14,10 @@ public class UserDbService {
 
     public UserDb save(UserDb userDb) {
         // Сначала пробуем найти объект в базе
-        UserDb result = userDbRepo.findByIdEqualsAndIs_botEqualsAndFirst_nameEqualsAndUsernameEquals(
+        UserDb result = userDbRepo.findByIdAndIsBotAndFirstNameAndUsername(
                 userDb.getId(),
-                userDb.getIs_bot(),
-                userDb.getFirst_name(),
+                userDb.getIsBot(),
+                userDb.getFirstName(),
                 userDb.getUsername()
         );
         if(result == null){

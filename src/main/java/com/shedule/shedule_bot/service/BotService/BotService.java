@@ -2,7 +2,9 @@ package com.shedule.shedule_bot.service.BotService;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.shedule.shedule_bot.entity.*;
 import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
 import com.shedule.shedule_bot.entity.Db.Shedule.Group;
@@ -11,6 +13,7 @@ import com.shedule.shedule_bot.entity.Db.UserTg;
 import com.shedule.shedule_bot.service.RepoService.*;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
 import com.shedule.shedule_bot.service.TgBot.Db.Entity.UpdateDb;
+import com.shedule.shedule_bot.service.TgBot.Db.Service.DbService;
 import com.shedule.shedule_bot.service.TgBot.Db.Service.UpdateDbService;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
 import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
@@ -38,7 +41,7 @@ public class BotService {
 
 
     @Autowired
-    UpdateDbService updateDbService;
+    DbService dbService;
 
     final
     UserTgServiceImpl userTgService;
@@ -490,9 +493,12 @@ public class BotService {
 
         {
             ObjectMapper jacksonObjectMapper = new ObjectMapper();
+            jacksonObjectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+            jacksonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
             final String json = jacksonObjectMapper.writeValueAsString(update);
             UpdateDb updateDb = jacksonObjectMapper.readValue(json, UpdateDb.class);
-            updateDb = updateDbService.save(updateDb);
+            updateDb = dbService.save(updateDb);
             System.out.println();
         }
 

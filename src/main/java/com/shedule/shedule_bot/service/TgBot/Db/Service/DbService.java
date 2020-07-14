@@ -14,6 +14,7 @@ public class DbService {
 
     @Autowired
     CallbackQueryDbService callbackQueryDbService;
+
     @Autowired
     UpdateDbService updateDbService;
 

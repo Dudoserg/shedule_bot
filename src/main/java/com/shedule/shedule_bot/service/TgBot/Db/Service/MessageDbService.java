@@ -21,30 +21,36 @@ public class MessageDbService {
 
     public MessageDb save(MessageDb messageDb) {
         // сначала пробуем найти объект в базе
-        MessageDb result = messageDbRepo.findByEdit_dateEqualsAndMessage_idEqualsAndFromEqualsAndDateEqualsAndChatEquals(
-                messageDb.getEdit_date(),
-                messageDb.getMessage_id(),
-                messageDb.getFrom(),
+        ChatDb chat = messageDb.getChat();
+        UserDb from = messageDb.getFrom();
+        UserDb forward_from = messageDb.getForwardFrom();
+        MessageDb reply_to_message = messageDb.getReplyToMessage();
+        if(chat != null){
+            chat = chatDbService.save(chat);
+            messageDb.setChat(chat);
+        }
+        if(from != null){
+            from = userDbService.save(from);
+            messageDb.setFrom(from);
+        }
+        if(forward_from != null){
+            forward_from = userDbService.save(forward_from);
+            messageDb.setForwardFrom(forward_from);
+        }
+        if(reply_to_message != null){
+            reply_to_message = this.save(reply_to_message);
+            messageDb.setReplyToMessage(reply_to_message);
+        }
+
+        MessageDb result = messageDbRepo.findByMessageIdAndFromAndDateAndEditDateAndChat(
+                messageDb.getMessageId(),
+                from,
                 messageDb.getDate(),
-                messageDb.getChat()
+                messageDb.getEditDate(),
+                chat
         );
         if(result == null){
             // создаем
-            ChatDb chat = messageDb.getChat();
-            if(chat != null){
-                chat = chatDbService.save(chat);
-                messageDb.setChat(chat);
-            }
-            UserDb forward_from = messageDb.getForward_from();
-            if(forward_from != null){
-                forward_from = userDbService.save(forward_from);
-                messageDb.setForward_from(forward_from);
-            }
-            MessageDb reply_to_message = messageDb.getReply_to_message();
-            if(reply_to_message != null){
-                reply_to_message = this.save(reply_to_message);
-                messageDb.setReply_to_message(reply_to_message);
-            }
             result = messageDbRepo.save(messageDb);
         }
         return result;
