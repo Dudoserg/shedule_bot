@@ -37,11 +37,9 @@ import java.util.stream.IntStream;
 
 @Service
 public class BotService {
-    private static final Logger logger = Logger.getLogger(BotService.class);
 
 
-    @Autowired
-    DbService dbService;
+
 
     final
     UserTgServiceImpl userTgService;
@@ -491,16 +489,6 @@ public class BotService {
         userTg = userTgService.save(userTg);
 
 
-        {
-            ObjectMapper jacksonObjectMapper = new ObjectMapper();
-            jacksonObjectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-            jacksonObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-            final String json = jacksonObjectMapper.writeValueAsString(update);
-            UpdateDb updateDb = jacksonObjectMapper.readValue(json, UpdateDb.class);
-            updateDb = dbService.save(updateDb);
-            System.out.println();
-        }
 
         return true;
     }

@@ -1,8 +1,13 @@
 package com.shedule.shedule_bot.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.shedule.shedule_bot.service.BotService.BotSaveUpdateService;
 import com.shedule.shedule_bot.service.BotService.BotService;
+import com.shedule.shedule_bot.service.TgBot.Db.Entity.UpdateDb;
+import com.shedule.shedule_bot.service.TgBot.Db.Service.DbService;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.Update;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import javassist.NotFoundException;
@@ -23,13 +28,18 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Controller
 public class BotController {
 
-    private final String TOKEN = "1277316228:AAFhTvIAwAxg-J5XWbqLCQfglbWkO3DmXm0";
-    private final String HOST_URL = "https://d62cda669526.ngrok.io";
+
+    final BotSaveUpdateService botSaveUpdateService;
     final BotService botService;
 
-    public BotController(BotService botService) {
+    public BotController(BotService botService, BotSaveUpdateService botSaveUpdateService) {
         this.botService = botService;
+        this.botSaveUpdateService = botSaveUpdateService;
     }
+
+    private final String TOKEN = "1277316228:AAFhTvIAwAxg-J5XWbqLCQfglbWkO3DmXm0";
+    private final String HOST_URL = "https://d62cda669526.ngrok.io";
+
 
     @RequestMapping(value = "tg/setwebhook", method = GET)
     public ResponseEntity<Object> account() throws NotFoundException, UnsupportedEncodingException, JsonProcessingException {
@@ -44,14 +54,17 @@ public class BotController {
     private ResponseEntity<Object> tg(
             @PathVariable String token,
             @RequestBody Update update
-    )   {
+    ) {
+        long m;
         if (!token.equals(TOKEN))
             return new ResponseEntity<Object>(false, HttpStatus.BAD_REQUEST);
 //        botService.sendMessage(TOKEN, update.getMessage().getChat().getId(), "ты послал: " + update.getMessage().getText());
         try {
-
-
+            m = System.currentTimeMillis();
             botService.receivedMessageFromUser(token, update);
+            System.out.println(" get update from tg" + String.format("%.2f", (System.currentTimeMillis() - m) / 1000.0));
+            botSaveUpdateService.save(update);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
