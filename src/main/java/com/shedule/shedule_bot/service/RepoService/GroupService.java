@@ -1,7 +1,7 @@
 package com.shedule.shedule_bot.service.RepoService;
 
-import com.shedule.shedule_bot.entity.Db.Faculty;
-import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
 
 import java.util.List;
 

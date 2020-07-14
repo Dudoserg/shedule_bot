@@ -2,13 +2,16 @@ package com.shedule.shedule_bot.service.BotService;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shedule.shedule_bot.entity.*;
-import com.shedule.shedule_bot.entity.Db.Faculty;
-import com.shedule.shedule_bot.entity.Db.Group;
-import com.shedule.shedule_bot.entity.Db.TimeSubject;
+import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.TimeSubject;
 import com.shedule.shedule_bot.entity.Db.UserTg;
 import com.shedule.shedule_bot.service.RepoService.*;
 import com.shedule.shedule_bot.service.TgBot.CustomFuture.Calendar.TgCalendar;
+import com.shedule.shedule_bot.service.TgBot.Db.Entity.UpdateDb;
+import com.shedule.shedule_bot.service.TgBot.Db.Service.UpdateDbService;
 import com.shedule.shedule_bot.service.TgBot.Entity.Update.*;
 import com.shedule.shedule_bot.service.TgBot.Methods.EditMessageText_Method;
 import com.shedule.shedule_bot.service.TgBot.Methods.SendMessage_Method;
@@ -17,6 +20,8 @@ import com.shedule.shedule_bot.service.TgBot.Objects.KeyboardButton;
 import com.shedule.shedule_bot.service.TgBot.Objects.ReplyKeyboardMarkup;
 import com.shedule.shedule_bot.service.TgBot.Objects.SendMessageResult;
 import com.shedule.shedule_bot.service.TgBot.TgBot;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +34,12 @@ import java.util.stream.IntStream;
 
 @Service
 public class BotService {
+    private static final Logger logger = Logger.getLogger(BotService.class);
+
+
+    @Autowired
+    UpdateDbService updateDbService;
+
     final
     UserTgServiceImpl userTgService;
 
@@ -54,6 +65,7 @@ public class BotService {
 
     @Transactional(rollbackFor = Exception.class)
     public boolean receivedMessageFromUser(String token, Update update) throws Exception {
+
 //        if (update.getMessage() == null || update.getMessage().getChat() == null || update.getMessage().getChat().getId() == null) {
 //            return false;
 //        }
@@ -68,6 +80,7 @@ public class BotService {
         if (checkCommand(token, update, userTg))
             return true;
 
+//        logger.info(" get message "  + jacksonObjectMapper.writeValueAsString(update));
 
         Integer state = userTg.getState();
         switch (state) {
@@ -473,6 +486,16 @@ public class BotService {
             }
         }
         userTg = userTgService.save(userTg);
+
+
+        {
+            ObjectMapper jacksonObjectMapper = new ObjectMapper();
+            final String json = jacksonObjectMapper.writeValueAsString(update);
+            UpdateDb updateDb = jacksonObjectMapper.readValue(json, UpdateDb.class);
+            updateDb = updateDbService.save(updateDb);
+            System.out.println();
+        }
+
         return true;
     }
 

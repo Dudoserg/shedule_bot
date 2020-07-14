@@ -1,6 +1,6 @@
 package com.shedule.shedule_bot.repo;
 
-import com.shedule.shedule_bot.entity.Db.Faculty;
+import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

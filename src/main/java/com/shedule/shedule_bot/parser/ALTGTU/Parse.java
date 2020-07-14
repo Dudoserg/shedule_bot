@@ -3,7 +3,7 @@ package com.shedule.shedule_bot.parser.ALTGTU;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shedule.shedule_bot.entity.Db.*;
+import com.shedule.shedule_bot.entity.Db.Shedule.*;
 import com.shedule.shedule_bot.parser.GroupInfo;
 import com.shedule.shedule_bot.parser.Shedule_parser;
 import com.shedule.shedule_bot.parser.WorkQueue;

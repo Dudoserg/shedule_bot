@@ -1,8 +1,8 @@
 package com.shedule.shedule_bot.service.RepoService;
 
-import com.shedule.shedule_bot.entity.Db.Day;
-import com.shedule.shedule_bot.entity.Db.Group;
-import com.shedule.shedule_bot.entity.Db.Shedule;
+import com.shedule.shedule_bot.entity.Db.Shedule.Day;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.Shedule;
 import com.shedule.shedule_bot.entity.SheduleDay;
 import com.shedule.shedule_bot.repo.SheduleRepo;
 import org.springframework.stereotype.Service;

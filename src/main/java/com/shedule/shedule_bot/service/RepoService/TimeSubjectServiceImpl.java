@@ -1,8 +1,7 @@
 package com.shedule.shedule_bot.service.RepoService;
 
-import com.shedule.shedule_bot.entity.Db.TimeSubject;
+import com.shedule.shedule_bot.entity.Db.Shedule.TimeSubject;
 import com.shedule.shedule_bot.repo.TimeSubjectRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;

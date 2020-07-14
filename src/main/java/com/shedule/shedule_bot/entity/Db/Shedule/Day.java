@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.entity.Db;
+package com.shedule.shedule_bot.entity.Db.Shedule;
 
 
 import lombok.Getter;

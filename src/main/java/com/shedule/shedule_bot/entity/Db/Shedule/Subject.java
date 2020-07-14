@@ -1,4 +1,4 @@
-package com.shedule.shedule_bot.entity.Db;
+package com.shedule.shedule_bot.entity.Db.Shedule;
 
 
 import lombok.Getter;
@@ -12,16 +12,18 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @Setter
-public class SubjectType {
+public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    private String name;
+    private String subjectName;
 
-    public SubjectType() {
+    public Subject(String subjectName) {
+        this.subjectName = subjectName;
     }
-    public SubjectType(String name) {
-        this.name = name;
+    public Subject() {
     }
+
+
 }

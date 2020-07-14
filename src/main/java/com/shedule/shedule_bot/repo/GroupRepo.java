@@ -1,7 +1,7 @@
 package com.shedule.shedule_bot.repo;
 
-import com.shedule.shedule_bot.entity.Db.Faculty;
-import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

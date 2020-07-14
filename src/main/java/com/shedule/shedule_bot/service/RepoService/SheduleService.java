@@ -1,6 +1,6 @@
 package com.shedule.shedule_bot.service.RepoService;
 
-import com.shedule.shedule_bot.entity.Db.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
 import com.shedule.shedule_bot.entity.SheduleDay;
 
 import java.time.LocalDate;

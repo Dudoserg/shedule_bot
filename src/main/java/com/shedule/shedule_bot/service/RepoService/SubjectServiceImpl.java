@@ -1,9 +1,8 @@
 package com.shedule.shedule_bot.service.RepoService;
 
 
-import com.shedule.shedule_bot.entity.Db.Subject;
+import com.shedule.shedule_bot.entity.Db.Shedule.Subject;
 import com.shedule.shedule_bot.repo.SubjectRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service

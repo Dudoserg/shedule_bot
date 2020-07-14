@@ -1,8 +1,8 @@
 package com.shedule.shedule_bot.repo;
 
-import com.shedule.shedule_bot.entity.Db.Day;
-import com.shedule.shedule_bot.entity.Db.Group;
-import com.shedule.shedule_bot.entity.Db.Shedule;
+import com.shedule.shedule_bot.entity.Db.Shedule.Day;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
+import com.shedule.shedule_bot.entity.Db.Shedule.Shedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

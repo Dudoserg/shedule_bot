@@ -1,7 +1,7 @@
 package com.shedule.shedule_bot.entity;
 
-import com.shedule.shedule_bot.entity.Db.Day;
-import com.shedule.shedule_bot.entity.Db.Shedule;
+import com.shedule.shedule_bot.entity.Db.Shedule.Day;
+import com.shedule.shedule_bot.entity.Db.Shedule.Shedule;
 import lombok.Getter;
 import lombok.Setter;
 

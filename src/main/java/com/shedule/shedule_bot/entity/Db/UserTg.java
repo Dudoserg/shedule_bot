@@ -1,5 +1,7 @@
 package com.shedule.shedule_bot.entity.Db;
 
+import com.shedule.shedule_bot.entity.Db.Shedule.Faculty;
+import com.shedule.shedule_bot.entity.Db.Shedule.Group;
 import lombok.Getter;
 import lombok.Setter;
 

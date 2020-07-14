@@ -1,6 +1,6 @@
 package com.shedule.shedule_bot.service.RepoService;
 
-import com.shedule.shedule_bot.entity.Db.TimeSubject;
+import com.shedule.shedule_bot.entity.Db.Shedule.TimeSubject;
 
 import java.util.List;
 
