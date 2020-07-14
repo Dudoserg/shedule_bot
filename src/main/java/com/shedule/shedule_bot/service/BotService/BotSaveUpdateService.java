@@ -36,10 +36,10 @@ public class BotSaveUpdateService {
             UpdateDb updateDb = jacksonObjectMapper.readValue(json, UpdateDb.class);
             updateDb = dbService.save(updateDb);
             System.out.println("save update from tg" + String.format("%.2f", (System.currentTimeMillis() - m) / 1000.0));
-            logger.info("Успешное сохранение объекта update IdDb #" + updateDb.getIdDb());
+            logger.info("successful save 'update' obj with IdDb #" + updateDb.getIdDb());
             return true;
         } catch (Exception e) {
-            logger.error("Шото пошло не так при сохранении следующего объекта: " + json);
+            logger.error("error while saving next object: " + json);
             return false;
         }
     }

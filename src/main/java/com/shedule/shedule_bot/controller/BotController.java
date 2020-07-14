@@ -42,7 +42,7 @@ public class BotController {
 
 
     @RequestMapping(value = "tg/setwebhook", method = GET)
-    public ResponseEntity<Object> account() throws NotFoundException, UnsupportedEncodingException, JsonProcessingException {
+    public ResponseEntity<Object> setwebhook() throws NotFoundException, UnsupportedEncodingException, JsonProcessingException {
 
         final boolean result =
                 botService.setWebhook(TOKEN, HOST_URL);
@@ -51,7 +51,7 @@ public class BotController {
     }
 
     @RequestMapping(value = "tg/{token}", method = {GET, POST})
-    private ResponseEntity<Object> tg(
+    private ResponseEntity<Object> webhook(
             @PathVariable String token,
             @RequestBody Update update
     ) {
@@ -72,7 +72,7 @@ public class BotController {
     }
 
     @RequestMapping(value = "tg/sendMessage/{message}", method = {GET, POST})
-    private ResponseEntity<Object> sendMessage(
+    private ResponseEntity<Object> testSendMessage(
             @PathVariable String message
     ) throws Exception {
         final SendMessageResult result = botService.sendMessage(TOKEN, "346755292", message);
@@ -81,7 +81,7 @@ public class BotController {
 
 
     @RequestMapping(value = "tg/sendKeyboard", method = {GET, POST})
-    private ResponseEntity<Object> sendKeyboard(
+    private ResponseEntity<Object> testSendKeyboard(
     ) throws Exception {
         final SendMessageResult result = botService.sendKeyboard(TOKEN);
         return new ResponseEntity<Object>("ok", HttpStatus.OK);
